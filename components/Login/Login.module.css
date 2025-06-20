@@ -1,0 +1,59 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--mantine-spacing-md);
+}
+
+.paper {
+  position: relative;
+  background: light-dark(rgba(255, 255, 255, 0.95), rgba(37, 38, 43, 0.95));
+  backdrop-filter: blur(10px);
+  border: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+}
+
+.paper:hover {
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px light-dark(rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.2));
+}
+
+.title {
+  color: light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-1));
+  font-size: rem(28px);
+  font-weight: 700;
+  letter-spacing: rem(-0.5px);
+  background: linear-gradient(135deg, var(--mantine-color-blue-6), var(--mantine-color-violet-6));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  @media (max-width: 768px) {
+    font-size: rem(24px);
+  }
+}
+
+.tabsList {
+  background: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6));
+  border-radius: var(--mantine-radius-md);
+  padding: rem(4px);
+}
+
+.tab {
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.tab:hover {
+  background: light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+}
+
+.tab[data-active] {
+  background: linear-gradient(135deg, var(--mantine-color-blue-6), var(--mantine-color-violet-6));
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
