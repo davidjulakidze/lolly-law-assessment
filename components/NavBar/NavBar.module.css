@@ -1,0 +1,88 @@
+
+.navButton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.navButton:hover {
+  background-color: var(--mantine-color-blue-0);
+  color: var(--mantine-color-blue-7);
+  transform: translateY(-1px);
+}
+
+.navButton:active {
+  transform: translateY(0);
+}
+
+[data-mantine-color-scheme="dark"] .navButton:hover {
+  background-color: var(--mantine-color-blue-9);
+  color: var(--mantine-color-blue-3);
+}
+
+.colorSchemeButton {
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.colorSchemeButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-mantine-color-scheme="light"] .colorSchemeButton {
+  background-color: var(--mantine-color-gray-0);
+}
+
+[data-mantine-color-scheme="light"] .colorSchemeButton:hover {
+  background-color: var(--mantine-color-blue-0);
+}
+
+[data-mantine-color-scheme="dark"] .colorSchemeButton {
+  background-color: var(--mantine-color-dark-6);
+  border: none;
+}
+
+[data-mantine-color-scheme="dark"] .colorSchemeButton:hover {
+  background-color: var(--mantine-color-dark-5);
+}
+
+.logoButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.logoButton:hover {
+  background-color: var(--mantine-color-gray-1);
+}
+
+[data-mantine-color-scheme="dark"] .logoButton:hover {
+  background-color: var(--mantine-color-dark-6);
+}
+
+.mobileNavButton {
+  position: relative;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.mobileNavButton:hover {
+  background-color: var(--mantine-color-blue-0);
+  color: var(--mantine-color-blue-7);
+}
+
+[data-mantine-color-scheme="dark"] .mobileNavButton:hover {
+  background-color: var(--mantine-color-blue-9);
+  color: var(--mantine-color-blue-3);
+}

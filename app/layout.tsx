@@ -2,14 +2,21 @@ import '@mantine/core/styles.css';
 
 import React from 'react';
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
+import { NavBar } from '@/components/NavBar/NavBar';
 import { theme } from '../theme';
+import { Navigation } from '@/types';
 
 export const metadata = {
-  title: 'Mantine Next.js template',
-  description: 'I am using Mantine with Next.js!',
+  title: 'LollyLaw Assessment',
+  description: 'An assessment for LollyLaw',
 };
 
-export default function RootLayout({ children }: { children: any }) {
+const navigations: Navigation[] = [
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+
+export default function RootLayout({ children }: Readonly<{ children: any }>) {
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
@@ -21,7 +28,9 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme}>
+          <NavBar title='LollyLaw' navigations={navigations}>{children}</NavBar>
+        </MantineProvider>
       </body>
     </html>
   );
