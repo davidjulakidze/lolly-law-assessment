@@ -81,14 +81,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const prisma = new PrismaClient();
-  const token = request.cookies.get('token')?.value;
-  if (!token) {
-    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
   try {
+    const userId = await verifyAuthToken(request);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     const data = await request.json();
     const { firstName, lastName, email, phone } = data;
 

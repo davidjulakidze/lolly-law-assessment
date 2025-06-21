@@ -29,10 +29,13 @@ export function CustomerList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 300);
 
-  // Fetch customers when component mounts or when search/pagination changes
   useEffect(() => {
-    fetchCustomers(state.customerPagination?.page ?? 1, itemsPerPage, debouncedSearchTerm);
+    fetchCustomers(1, itemsPerPage, debouncedSearchTerm);
   }, [debouncedSearchTerm]);
+
+  useEffect(() => {
+    fetchCustomers(1, itemsPerPage, '');
+  }, []);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
