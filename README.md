@@ -29,7 +29,7 @@ sudo ./docker-setup.sh
 
 **For Windows:**
 ```cmd
-docker-setup.bat
+.\docker-setup.bat
 ```
 
 **To stop the services:**
