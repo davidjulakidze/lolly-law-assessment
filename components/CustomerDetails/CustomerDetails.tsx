@@ -36,7 +36,8 @@ export function CustomerDetails() {
             </Avatar>{' '}
             <div>
               <Text fw={600} size="lg">
-                {selectedCustomer.firstName} {selectedCustomer.lastName}
+                {selectedCustomer.firstName} {selectedCustomer.middleName}{' '}
+                {selectedCustomer.lastName}
               </Text>
               <Badge variant="light" color="blue" size="sm">
                 Customer

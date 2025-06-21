@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
       ? {
           OR: [
             { firstName: { contains: search, mode: 'insensitive' as const } },
+            { middleName: { contains: search, mode: 'insensitive' as const } },
             { lastName: { contains: search, mode: 'insensitive' as const } },
             { email: { contains: search, mode: 'insensitive' as const } },
           ],
@@ -40,6 +41,7 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         firstName: true,
+        middleName: true,
         lastName: true,
         email: true,
         phone: true,
@@ -90,7 +92,7 @@ export async function POST(request: NextRequest) {
       });
     }
     const data = await request.json();
-    const { firstName, lastName, email, phone } = data;
+    const { firstName, middleName, lastName, email, phone } = data;
 
     if (!firstName || !lastName || !email || !phone) {
       return new NextResponse(JSON.stringify({ error: 'Missing required fields' }), {
@@ -102,6 +104,7 @@ export async function POST(request: NextRequest) {
     const newCustomer = await prisma.customer.create({
       data: {
         firstName,
+        middleName,
         lastName,
         email,
         phone,
@@ -109,6 +112,7 @@ export async function POST(request: NextRequest) {
       select: {
         id: true,
         firstName: true,
+        middleName: true,
         lastName: true,
         email: true,
         phone: true,

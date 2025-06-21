@@ -32,6 +32,7 @@ interface LoginFormValues {
 interface SignUpFormValues {
   firstName: string;
   lastName: string;
+  middleName?: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -57,6 +58,7 @@ export function Login() {
   const signUpForm = useForm<SignUpFormValues>({
     initialValues: {
       firstName: '',
+      middleName: '',
       lastName: '',
       email: '',
       password: '',
@@ -190,6 +192,11 @@ export function Login() {
                     label="First Name"
                     placeholder="John"
                     {...signUpForm.getInputProps('firstName')}
+                  />
+                  <TextInput
+                    label="Middle Name"
+                    placeholder="A."
+                    {...signUpForm.getInputProps('middleName')}
                   />
                   <TextInput
                     required

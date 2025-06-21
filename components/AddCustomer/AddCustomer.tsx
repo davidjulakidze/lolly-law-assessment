@@ -13,6 +13,7 @@ interface AddCustomerProps {
 
 interface CustomerFormValues {
   firstName: string;
+  middleName?: string;
   lastName: string;
   email: string;
   phone: string;
@@ -26,6 +27,7 @@ export function AddCustomer({ opened, onClose, onCustomerAdded }: Readonly<AddCu
   const form = useForm<CustomerFormValues>({
     initialValues: {
       firstName: '',
+      middleName: '',
       lastName: '',
       email: '',
       phone: '',
@@ -55,6 +57,7 @@ export function AddCustomer({ opened, onClose, onCustomerAdded }: Readonly<AddCu
         },
         body: JSON.stringify({
           firstName: values.firstName.trim(),
+          middleName: values.middleName?.trim() ?? undefined,
           lastName: values.lastName.trim(),
           email: values.email.trim(),
           phone: values.phone.trim(),
@@ -118,6 +121,12 @@ export function AddCustomer({ opened, onClose, onCustomerAdded }: Readonly<AddCu
                 required
                 disabled={loading}
                 {...form.getInputProps('firstName')}
+              />
+              <TextInput
+                label="Middle Name"
+                placeholder="A."
+                disabled={loading}
+                {...form.getInputProps('middleName')}
               />
               <TextInput
                 label="Last Name"

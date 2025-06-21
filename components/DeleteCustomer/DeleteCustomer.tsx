@@ -91,7 +91,7 @@ export function DeleteCustomer({
           <Text size="sm">
             Are you sure you want to delete{' '}
             <strong>
-              {customer.firstName} {customer.lastName}
+              {customer.firstName} {customer.middleName} {customer.lastName}
             </strong>
             ?
           </Text>

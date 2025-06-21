@@ -6,6 +6,7 @@ export interface Navigation {
 export interface Customer {
   id: number;
   firstName: string;
+  middleName?: string;
   lastName: string;
   email: string;
   phone: string;
@@ -23,6 +24,7 @@ export interface Matter {
 export interface User {
   id: number;
   firstName: string;
+  middleName?: string;
   lastName: string;
   email: string;
 }

@@ -32,6 +32,11 @@ chmod +x docker-setup.sh
 docker-setup.bat
 ```
 
+**To stop the services:**
+```bash
+docker-compose down
+```
+
 ### Option 2: Manual Setup
 
 1. **Clone the repository:**
@@ -234,6 +239,8 @@ docker-compose exec app sh
 ## API Documentation
 
 The LollyLaw Assessment API provides endpoints for managing customers, matters, and authentication. All endpoints except authentication require JWT authentication via HTTP-only cookies. JWT tokens are automatically included via HTTP-only cookies after login.
+
+API routes located under `app/api/**` directory.
 
 ### Base URL
 - **Development**: `http://localhost:3000`

@@ -111,7 +111,8 @@ export const NavBar = (props: NavBarProps) => {
                     <Menu.Label>Account</Menu.Label>
                     <Menu.Item>
                       <Text size="sm" fw={500}>
-                        {state.user?.firstName ?? 'User'} {state.user?.lastName ?? ''}
+                        {state.user?.firstName ?? 'User'} {state.user?.middleName ?? ''}{' '}
+                        {state.user?.lastName ?? ''}
                       </Text>
                       <Text size="xs" c="dimmed">
                         {state.user?.email ?? ''}
@@ -161,7 +162,8 @@ export const NavBar = (props: NavBarProps) => {
                 </Avatar>
                 <div>
                   <Text size="sm" fw={500}>
-                    {state.user?.firstName ?? 'User'} {state.user?.lastName ?? ''}
+                    {state.user?.firstName ?? 'User'} {state.user?.middleName ?? ''}{' '}
+                    {state.user?.lastName ?? ''}
                   </Text>
                   <Text size="xs" c="dimmed">
                     {state.user?.email ?? ''}

@@ -28,6 +28,7 @@ export async function GET(
       select: {
         id: true,
         firstName: true,
+        middleName: true,
         lastName: true,
         email: true,
         phone: true,
@@ -78,7 +79,7 @@ export async function PUT(
       });
     }
     const data = await request.json();
-    const { firstName, lastName, email, phone } = data;
+    const { firstName, middleName, lastName, email, phone } = data;
 
     if (!firstName || !lastName || !email || !phone) {
       return new NextResponse(JSON.stringify({ error: 'Missing required fields' }), {
@@ -89,10 +90,11 @@ export async function PUT(
 
     const updatedCustomer = await prisma.customer.update({
       where: { id: Number(customer_id) },
-      data: { firstName, lastName, email, phone },
+      data: { firstName, middleName, lastName, email, phone },
       select: {
         id: true,
         firstName: true,
+        middleName: true,
         lastName: true,
         email: true,
         phone: true,

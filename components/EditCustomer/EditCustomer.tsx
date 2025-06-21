@@ -15,6 +15,7 @@ interface EditCustomerProps {
 
 interface CustomerFormValues {
   firstName: string;
+  middleName?: string;
   lastName: string;
   email: string;
   phone: string;
@@ -33,6 +34,7 @@ export function EditCustomer({
   const form = useForm<CustomerFormValues>({
     initialValues: {
       firstName: '',
+      middleName: '',
       lastName: '',
       email: '',
       phone: '',
@@ -53,6 +55,7 @@ export function EditCustomer({
     if (customer && opened) {
       form.setValues({
         firstName: customer.firstName,
+        middleName: customer.middleName,
         lastName: customer.lastName,
         email: customer.email,
         phone: customer.phone,
@@ -78,6 +81,7 @@ export function EditCustomer({
         body: JSON.stringify({
           id: customer.id,
           firstName: values.firstName.trim(),
+          middleName: values.middleName?.trim(),
           lastName: values.lastName.trim(),
           email: values.email.trim(),
           phone: values.phone.trim(),
@@ -143,6 +147,12 @@ export function EditCustomer({
                 required
                 disabled={loading}
                 {...form.getInputProps('firstName')}
+              />
+              <TextInput
+                label="Middle Name"
+                placeholder="A."
+                disabled={loading}
+                {...form.getInputProps('middleName')}
               />
               <TextInput
                 label="Last Name"

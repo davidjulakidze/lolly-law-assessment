@@ -151,7 +151,7 @@ function CustomerListItem({ customer, isSelected, onSelect }: Readonly<CustomerL
         </Avatar>
         <div style={{ flex: 1 }}>
           <Text fw={500} size="sm">
-            {customer.firstName} {customer.lastName}
+            {customer.firstName} {customer.middleName} {customer.lastName}
             {isSelected && (
               <Text component="span" size="xs" c="blue" ml="xs">
                 (selected)
