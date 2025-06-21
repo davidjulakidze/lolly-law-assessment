@@ -13,9 +13,10 @@ export async function POST(request: NextRequest) {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
   });
+  const secure = process.env.NODE_ENV === 'production' ? 'Secure' : '';
   response.headers.set(
     'Set-Cookie',
-    'token=; HttpOnly; Secure; Path=/; Max-Age=0; SameSite=Strict'
+    `token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax; ${secure}`
   );
   return response;
 }

@@ -53,10 +53,11 @@ export async function POST(request: NextRequest) {
         headers: { 'Content-Type': 'application/json' },
       }
     );
-
+    const secure = process.env.NODE_ENV === 'production' ? 'Secure' : '';
+    const maxAge = rememberMe ? 604800 : 3600; // 7 days or 1 hour
     response.headers.set(
       'Set-Cookie',
-      `token=${token}; HttpOnly; ${process.env.NODE_ENV === 'development' ? '' : 'Secure;'} Path=/; Max-Age=${rememberMe ? 604800 : 3600}; SameSite=Strict`
+      `token=${token}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Lax; ${secure}`
     );
     return response;
   } catch (error) {
