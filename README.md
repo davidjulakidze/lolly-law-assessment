@@ -13,12 +13,12 @@ This guide explains how to run the LollyLaw Assessment application using Docker.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/davidjulakidze/LollyLawAssessment.git
+   git clone https://github.com/davidjulakidze/lolly-law-assessment.git
    ```
 
 2. **Navigate to the project directory:**
    ```bash
-    cd LollyLawAssessment
+    cd lolly-law-assessment
     ```
 
 **For Unix/Linux/macOS:**
@@ -47,13 +47,13 @@ docker compose down
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/davidjulakidze/LollyLawAssessment.git
+   git clone https://github.com/davidjulakidze/lolly-law-assessment.git
    ```
 
 
 2. **Navigate to the project directory:**
    ```bash
-    cd LollyLawAssessment
+    cd lolly-law-assessment
     ```
 
 3. **Create environment file:**
@@ -89,12 +89,12 @@ docker compose down
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/davidjulakidze/LollyLawAssessment.git
+   git clone https://github.com/davidjulakidze/lolly-law-assessment.git
    ```
 
 2. **Navigate to the project directory:**
    ```bash
-   cd LollyLawAssessment
+   cd lolly-law-assessment
    ```
 
 3. **Install dependencies:**
