@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { IconPlus, IconSearch } from '@tabler/icons-react';
 import {
   Avatar,
@@ -20,8 +19,7 @@ import { Customer } from '@/types';
 
 export function CustomerList() {
   const { state, dispatch } = useDashboard();
-  const { handleCustomerSelect, setSearchTerm } = useDashboardActions();
-  const [currentPage, setCurrentPage] = useState(1);
+  const { handleCustomerSelect, setSearchTerm, setCustomerPage } = useDashboardActions();
   const itemsPerPage = 10;
 
   const filteredCustomers = state.customers.filter(
@@ -34,14 +32,13 @@ export function CustomerList() {
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
+  const startIndex = (state.customerCurrentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedCustomers = filteredCustomers.slice(startIndex, endIndex);
 
   // Reset to first page when search term changes
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    setCurrentPage(1);
   };
 
   const handleAddCustomer = () => {
@@ -71,7 +68,7 @@ export function CustomerList() {
                 key={customer.id}
                 customer={customer}
                 isSelected={state.selectedCustomer?.id === customer.id}
-                onSelect={handleCustomerSelect}
+                onSelect={(customer) => handleCustomerSelect(customer, state.selectedCustomer)}
               />
             ))}
             {filteredCustomers.length === 0 && (
@@ -87,8 +84,8 @@ export function CustomerList() {
         {totalPages > 1 && (
           <Group justify="center" mt="auto">
             <Pagination
-              value={currentPage}
-              onChange={setCurrentPage}
+              value={state.customerCurrentPage}
+              onChange={setCustomerPage}
               total={totalPages}
               size="sm"
               withEdges
@@ -126,15 +123,20 @@ function CustomerListItem({ customer, isSelected, onSelect }: Readonly<CustomerL
         borderColor: isSelected ? 'var(--mantine-color-blue-3)' : undefined,
       }}
       onClick={() => onSelect(customer)}
+      title={isSelected ? 'Click to deselect customer' : 'Click to select customer'}
     >
       <Group gap="sm">
-        {' '}
         <Avatar color="blue" radius="xl">
           {customer.firstName.charAt(0).toUpperCase()}
         </Avatar>
         <div style={{ flex: 1 }}>
           <Text fw={500} size="sm">
             {customer.firstName} {customer.lastName}
+            {isSelected && (
+              <Text component="span" size="xs" c="blue" ml="xs">
+                (selected)
+              </Text>
+            )}
           </Text>
           <Text size="xs" c="dimmed">
             {customer.email}

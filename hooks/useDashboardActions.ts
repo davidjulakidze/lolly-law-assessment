@@ -25,9 +25,14 @@ export function useDashboardActions() {
     }
   };
 
-  const handleCustomerSelect = (customer: any) => {
-    dispatch({ type: 'SELECT_CUSTOMER', payload: customer });
-    fetchCustomerMatters(customer.id);
+  const handleCustomerSelect = (customer: any, currentSelectedCustomer: any) => {
+    if (currentSelectedCustomer && currentSelectedCustomer.id === customer.id) {
+      dispatch({ type: 'SELECT_CUSTOMER', payload: null });
+    } else {
+      dispatch({ type: 'SELECT_CUSTOMER', payload: customer });
+      dispatch({ type: 'RESET_MATTER_PAGE' });
+      fetchCustomerMatters(customer.id);
+    }
   };
 
   const handleCustomerAdded = (newCustomer: any) => {
@@ -66,6 +71,15 @@ export function useDashboardActions() {
 
   const setSearchTerm = (term: string) => {
     dispatch({ type: 'SET_SEARCH_TERM', payload: term });
+    dispatch({ type: 'RESET_CUSTOMER_PAGE' }); // Reset page when searching
+  };
+
+  const setCustomerPage = (page: number) => {
+    dispatch({ type: 'SET_CUSTOMER_PAGE', payload: page });
+  };
+
+  const setMatterPage = (page: number) => {
+    dispatch({ type: 'SET_MATTER_PAGE', payload: page });
   };
 
   return {
@@ -79,5 +93,7 @@ export function useDashboardActions() {
     handleEditMatter,
     handleDeleteMatter,
     setSearchTerm,
+    setCustomerPage,
+    setMatterPage,
   };
 }

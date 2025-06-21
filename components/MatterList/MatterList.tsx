@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { IconAlertCircle, IconEdit, IconPlus, IconTrash } from '@tabler/icons-react';
 import {
   Alert,
@@ -22,9 +22,8 @@ import { Matter } from '@/types';
 
 export function MatterList() {
   const { state, dispatch } = useDashboard();
-  const { handleEditMatter, handleDeleteMatter } = useDashboardActions();
+  const { handleEditMatter, handleDeleteMatter, setMatterPage } = useDashboardActions();
   const { selectedCustomer, loadingMatters, mattersError } = state;
-  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
   const handleAddMatter = () => {
@@ -34,13 +33,13 @@ export function MatterList() {
   const matters = selectedCustomer?.matters || [];
 
   const totalPages = Math.ceil(matters.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
+  const startIndex = (state.matterCurrentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedMatters = matters.slice(startIndex, endIndex);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCustomer?.id]);
+    dispatch({ type: 'RESET_MATTER_PAGE' });
+  }, [selectedCustomer?.id, dispatch]);
   if (!selectedCustomer) {
     return (
       <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -105,8 +104,8 @@ export function MatterList() {
         {totalPages > 1 && (
           <Group justify="center" mt="auto">
             <Pagination
-              value={currentPage}
-              onChange={setCurrentPage}
+              value={state.matterCurrentPage}
+              onChange={setMatterPage}
               total={totalPages}
               size="sm"
               withEdges

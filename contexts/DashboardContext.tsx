@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, ReactNode, useContext, useReducer } from 'react';
+import { createContext, ReactNode, useContext, useMemo, useReducer } from 'react';
 import { Customer, Matter } from '@/types';
 
 // State interface
@@ -9,6 +9,10 @@ export interface DashboardState {
   customers: Customer[];
   selectedCustomer: Customer | null;
   searchTerm: string;
+
+  // Pagination state
+  customerCurrentPage: number;
+  matterCurrentPage: number;
 
   // Matter state
   selectedMatter: Matter | null;
@@ -33,6 +37,12 @@ export type DashboardAction =
   | { type: 'DELETE_CUSTOMER'; payload: number }
   | { type: 'SELECT_CUSTOMER'; payload: Customer | null }
   | { type: 'SET_SEARCH_TERM'; payload: string }
+
+  // Pagination actions
+  | { type: 'SET_CUSTOMER_PAGE'; payload: number }
+  | { type: 'SET_MATTER_PAGE'; payload: number }
+  | { type: 'RESET_CUSTOMER_PAGE' }
+  | { type: 'RESET_MATTER_PAGE' }
 
   // Matter actions
   | { type: 'SET_CUSTOMER_MATTERS'; payload: Matter[] }
@@ -62,6 +72,8 @@ export const initialState: DashboardState = {
   customers: [],
   selectedCustomer: null,
   searchTerm: '',
+  customerCurrentPage: 1,
+  matterCurrentPage: 1,
   selectedMatter: null,
   loadingMatters: false,
   mattersError: null,
@@ -118,6 +130,19 @@ export function dashboardReducer(state: DashboardState, action: DashboardAction)
 
     case 'SET_SEARCH_TERM':
       return { ...state, searchTerm: action.payload };
+
+    // Pagination actions
+    case 'SET_CUSTOMER_PAGE':
+      return { ...state, customerCurrentPage: action.payload };
+
+    case 'SET_MATTER_PAGE':
+      return { ...state, matterCurrentPage: action.payload };
+
+    case 'RESET_CUSTOMER_PAGE':
+      return { ...state, customerCurrentPage: 1 };
+
+    case 'RESET_MATTER_PAGE':
+      return { ...state, matterCurrentPage: 1 };
 
     // Matter actions
     case 'SET_CUSTOMER_MATTERS':
@@ -221,18 +246,18 @@ export const DashboardContext = createContext<{
 export function DashboardProvider({
   children,
   initialCustomers,
-}: {
+}: Readonly<{
   children: ReactNode;
   initialCustomers: Customer[];
-}) {
+}>) {
   const [state, dispatch] = useReducer(dashboardReducer, {
     ...initialState,
     customers: initialCustomers,
   });
 
-  return (
-    <DashboardContext.Provider value={{ state, dispatch }}>{children}</DashboardContext.Provider>
-  );
+  const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);
+
+  return <DashboardContext.Provider value={contextValue}>{children}</DashboardContext.Provider>;
 }
 
 // Custom hook to use the dashboard context
