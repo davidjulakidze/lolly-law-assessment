@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { IconSearch, IconPlus } from '@tabler/icons-react';
 import {
   Avatar,
   Button,
   Card,
   Group,
+  Pagination,
   ScrollArea,
   Stack,
   Text,
@@ -19,19 +21,33 @@ import { Customer } from '@/types';
 export function CustomerList() {
   const { state, dispatch } = useDashboard();
   const { handleCustomerSelect, setSearchTerm } = useDashboardActions();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const filteredCustomers = state.customers.filter(
     (customer) =>
       `${customer.firstName} ${customer.lastName}`.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(state.searchTerm.toLowerCase())
   );
 
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedCustomers = filteredCustomers.slice(startIndex, endIndex);
+
+  // Reset to first page when search term changes
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
+
   const handleAddCustomer = () => {
     dispatch({ type: 'OPEN_ADD_CUSTOMER_MODAL' });
   };
-
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Stack gap="md">
+    <Card shadow="sm" padding="lg" radius="md" withBorder mah="80vh">
+      <Stack gap="md" h="100%">
         <Group justify="space-between">
           <Title order={3}>Customers</Title>
           <Button
@@ -47,12 +63,12 @@ export function CustomerList() {
           placeholder="Search customers..."
           leftSection={<IconSearch size={16} />}
           value={state.searchTerm}
-          onChange={(event) => setSearchTerm(event.currentTarget.value)}
+          onChange={(event) => handleSearch(event.currentTarget.value)}
         />
 
-        <ScrollArea h={400}>
+        <ScrollArea style={{ flex: 1 }} offsetScrollbars>
           <Stack gap="xs">
-            {filteredCustomers.map((customer) => (
+            {paginatedCustomers.map((customer) => (
               <CustomerListItem
                 key={customer.id}
                 customer={customer}
@@ -62,11 +78,29 @@ export function CustomerList() {
             ))}
             {filteredCustomers.length === 0 && (
               <Text c="dimmed" ta="center" py="xl">
-                No customers found
+                {state.searchTerm ? 'No customers found matching your search' : 'No customers found'}
               </Text>
             )}
           </Stack>
         </ScrollArea>
+
+        {totalPages > 1 && (
+          <Group justify="center" mt="auto">
+            <Pagination
+              value={currentPage}
+              onChange={setCurrentPage}
+              total={totalPages}
+              size="sm"
+              withEdges
+            />
+          </Group>
+        )}
+
+        {filteredCustomers.length > 0 && (
+          <Text size="xs" c="dimmed" ta="center">
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredCustomers.length)} of {filteredCustomers.length} customers
+          </Text>
+        )}
       </Stack>
     </Card>
   );

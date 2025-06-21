@@ -19,7 +19,7 @@ export function Dashboard() {
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 8 }}>
-          <Grid>
+          <Grid gutter="md">
             <Grid.Col span={12}>
               <CustomerDetails />
             </Grid.Col>

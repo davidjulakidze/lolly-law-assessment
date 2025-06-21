@@ -25,21 +25,21 @@ export function MatterList() {
 
   const handleAddMatter = () => {
     dispatch({ type: 'OPEN_ADD_MATTER_MODAL' });
-  };
-
-  if (!selectedCustomer) {
+  };  if (!selectedCustomer) {
     return (
-      <Card shadow="sm" padding="lg" radius="md" withBorder h={400}>
-        <Text c="dimmed" ta="center" mt="xl">
-          Select a customer to view their matters
-        </Text>
+      <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <Center h="100%">
+          <Text c="dimmed" ta="center">
+            Select a customer to view their matters
+          </Text>
+        </Center>
       </Card>
     );
   }
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Stack gap="md">
+    <Card shadow="sm" padding="lg" radius="md" withBorder mah="80vh">
+      <Stack gap="md" h="100%">
         <Group justify="space-between">
           <Title order={3}>Matters</Title>
           <Button
@@ -50,12 +50,6 @@ export function MatterList() {
             Add Matter
           </Button>
         </Group>
-
-        {loadingMatters && (
-          <Center py="xl">
-            <Loader />
-          </Center>
-        )}
 
         {mattersError && (
           <Alert
@@ -68,8 +62,12 @@ export function MatterList() {
           </Alert>
         )}
 
-        {!loadingMatters && !mattersError && (
-          <ScrollArea h={300}>
+        {loadingMatters ? (
+          <Center style={{ flex: 1 }}>
+            <Loader />
+          </Center>
+        ) : (
+          <ScrollArea style={{ flex: 1 }} offsetScrollbars>
             <Stack gap="xs">
               {selectedCustomer.matters && selectedCustomer.matters.length > 0 ? (
                 selectedCustomer.matters.map((matter) => (
@@ -81,13 +79,23 @@ export function MatterList() {
                   />
                 ))
               ) : (
-                <Text c="dimmed" ta="center" py="xl">
-                  No matters found for this customer
-                </Text>
+                <Center py="xl">
+                  <Stack align="center" gap="md">
+                    <Text c="dimmed" ta="center">
+                      No matters found for this customer
+                    </Text>
+                    <Button
+                      variant="light"
+                      leftSection={<IconPlus size={16} />}
+                      onClick={handleAddMatter}
+                    >
+                      Create First Matter
+                    </Button>
+                  </Stack>
+                </Center>
               )}
             </Stack>
-          </ScrollArea>
-        )}
+          </ScrollArea>        )}
       </Stack>
     </Card>
   );
