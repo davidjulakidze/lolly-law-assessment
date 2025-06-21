@@ -20,6 +20,7 @@ import {
   Title,
 } from '@mantine/core';
 import { Customer } from '@/generated/prisma';
+import { AddCustomer } from '@/components/AddCustomer/AddCustomer';
 
 interface Matter {
   id: number;
@@ -42,6 +43,8 @@ export function Dashboard(props: Readonly<DashboardProps>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingMatters, setLoadingMatters] = useState(false);
   const [mattersError, setMattersError] = useState<string | null>(null);
+  const [addCustomerOpened, setAddCustomerOpened] = useState(false);
+  const [customerList, setCustomerList] = useState<Customer[]>(customers);
 
   const fetchCustomerMatters = async (customerId: number) => {
     setLoadingMatters(true);
@@ -73,7 +76,11 @@ export function Dashboard(props: Readonly<DashboardProps>) {
     fetchCustomerMatters(customer.id);
   };
 
-  const filteredCustomers = customers.filter(
+  const handleCustomerAdded = (newCustomer: Customer) => {
+    setCustomerList(prev => [...prev, newCustomer]);
+  };
+
+  const filteredCustomers = customerList.filter(
     (customer) =>
       `${customer.firstName} ${customer.lastName}`
         .toLowerCase()
@@ -116,7 +123,11 @@ export function Dashboard(props: Readonly<DashboardProps>) {
           <Card shadow="sm" padding="lg" radius="md" withBorder h="calc(100vh - 200px)">
             <Group justify="space-between" mb="md">
               <Title order={3}>Customers</Title>
-              <Button leftSection={<IconPlus size={16} />} size="sm">
+              <Button 
+                leftSection={<IconPlus size={16} />} 
+                size="sm"
+                onClick={() => setAddCustomerOpened(true)}
+              >
                 Add Customer
               </Button>
             </Group>
@@ -287,6 +298,12 @@ export function Dashboard(props: Readonly<DashboardProps>) {
           )}
         </Grid.Col>
       </Grid>
+      
+      <AddCustomer
+        opened={addCustomerOpened}
+        onClose={() => setAddCustomerOpened(false)}
+        onCustomerAdded={handleCustomerAdded}
+      />
     </Container>
   );
 }

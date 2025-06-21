@@ -18,6 +18,8 @@ export async function GET(Request: NextRequest) {
         firstName: true,
         lastName: true,
         email: true,
+        phone: true,
+        createdAt: true,
       },
     });
     return new NextResponse(JSON.stringify(customers), {
