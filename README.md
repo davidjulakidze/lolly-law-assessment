@@ -24,7 +24,7 @@ This guide explains how to run the LollyLaw Assessment application using Docker.
 **For Unix/Linux/macOS:**
 ```bash
 chmod +x docker-setup.sh
-./docker-setup.sh
+sudo ./docker-setup.sh
 ```
 
 **For Windows:**
@@ -35,6 +35,12 @@ docker-setup.bat
 **To stop the services:**
 ```bash
 docker-compose down
+```
+
+** For Unix/Linux/macOS:**
+```
+bash
+docker compose down
 ```
 
 ### Option 2: Manual Setup
