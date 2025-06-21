@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useReducer, ReactNode } from 'react';
+import { createContext, ReactNode, useContext, useReducer } from 'react';
 import { Customer, Matter } from '@/types';
 
 // State interface
@@ -9,12 +9,12 @@ export interface DashboardState {
   customers: Customer[];
   selectedCustomer: Customer | null;
   searchTerm: string;
-  
+
   // Matter state
   selectedMatter: Matter | null;
   loadingMatters: boolean;
   mattersError: string | null;
-  
+
   // Modal state
   addCustomerOpened: boolean;
   editCustomerOpened: boolean;
@@ -33,7 +33,7 @@ export type DashboardAction =
   | { type: 'DELETE_CUSTOMER'; payload: number }
   | { type: 'SELECT_CUSTOMER'; payload: Customer | null }
   | { type: 'SET_SEARCH_TERM'; payload: string }
-  
+
   // Matter actions
   | { type: 'SET_CUSTOMER_MATTERS'; payload: Matter[] }
   | { type: 'ADD_MATTER'; payload: Matter }
@@ -42,7 +42,7 @@ export type DashboardAction =
   | { type: 'SELECT_MATTER'; payload: Matter | null }
   | { type: 'SET_LOADING_MATTERS'; payload: boolean }
   | { type: 'SET_MATTERS_ERROR'; payload: string | null }
-  
+
   // Modal actions
   | { type: 'OPEN_ADD_CUSTOMER_MODAL' }
   | { type: 'CLOSE_ADD_CUSTOMER_MODAL' }
@@ -79,44 +79,46 @@ export function dashboardReducer(state: DashboardState, action: DashboardAction)
     // Customer actions
     case 'SET_CUSTOMERS':
       return { ...state, customers: action.payload };
-    
+
     case 'ADD_CUSTOMER':
       return { ...state, customers: [...state.customers, action.payload] };
-    
+
     case 'UPDATE_CUSTOMER': {
-      const updatedCustomers = state.customers.map(customer =>
+      const updatedCustomers = state.customers.map((customer) =>
         customer.id === action.payload.id ? action.payload : customer
       );
-      const updatedSelectedCustomer = state.selectedCustomer?.id === action.payload.id
-        ? { ...state.selectedCustomer, ...action.payload }
-        : state.selectedCustomer;
-      
+      const updatedSelectedCustomer =
+        state.selectedCustomer?.id === action.payload.id
+          ? { ...state.selectedCustomer, ...action.payload }
+          : state.selectedCustomer;
+
       return {
         ...state,
         customers: updatedCustomers,
         selectedCustomer: updatedSelectedCustomer,
       };
     }
-    
+
     case 'DELETE_CUSTOMER': {
-      const filteredCustomers = state.customers.filter(customer => customer.id !== action.payload);
-      const clearedSelectedCustomer = state.selectedCustomer?.id === action.payload
-        ? null
-        : state.selectedCustomer;
-      
+      const filteredCustomers = state.customers.filter(
+        (customer) => customer.id !== action.payload
+      );
+      const clearedSelectedCustomer =
+        state.selectedCustomer?.id === action.payload ? null : state.selectedCustomer;
+
       return {
         ...state,
         customers: filteredCustomers,
         selectedCustomer: clearedSelectedCustomer,
       };
     }
-    
+
     case 'SELECT_CUSTOMER':
       return { ...state, selectedCustomer: action.payload };
-    
+
     case 'SET_SEARCH_TERM':
       return { ...state, searchTerm: action.payload };
-    
+
     // Matter actions
     case 'SET_CUSTOMER_MATTERS':
       return {
@@ -125,7 +127,7 @@ export function dashboardReducer(state: DashboardState, action: DashboardAction)
           ? { ...state.selectedCustomer, matters: action.payload }
           : null,
       };
-    
+
     case 'ADD_MATTER':
       return {
         ...state,
@@ -136,71 +138,74 @@ export function dashboardReducer(state: DashboardState, action: DashboardAction)
             }
           : null,
       };
-    
+
     case 'UPDATE_MATTER':
       return {
         ...state,
         selectedCustomer: state.selectedCustomer
           ? {
               ...state.selectedCustomer,
-              matters: state.selectedCustomer.matters?.map(matter =>
-                matter.id === action.payload.id ? action.payload : matter
-              ) || [],
+              matters:
+                state.selectedCustomer.matters?.map((matter) =>
+                  matter.id === action.payload.id ? action.payload : matter
+                ) || [],
             }
           : null,
       };
-    
+
     case 'DELETE_MATTER':
       return {
         ...state,
         selectedCustomer: state.selectedCustomer
           ? {
               ...state.selectedCustomer,
-              matters: state.selectedCustomer.matters?.filter(matter => matter.id !== action.payload) || [],
+              matters:
+                state.selectedCustomer.matters?.filter((matter) => matter.id !== action.payload) ||
+                [],
             }
           : null,
       };
-    
+
     case 'SELECT_MATTER':
       return { ...state, selectedMatter: action.payload };
-    
+
     case 'SET_LOADING_MATTERS':
       return { ...state, loadingMatters: action.payload };
-    
+
     case 'SET_MATTERS_ERROR':
       return { ...state, mattersError: action.payload };
-    
+
     // Modal actions
     case 'OPEN_ADD_CUSTOMER_MODAL':
       return { ...state, addCustomerOpened: true };
     case 'CLOSE_ADD_CUSTOMER_MODAL':
       return { ...state, addCustomerOpened: false };
-    
+
     case 'OPEN_EDIT_CUSTOMER_MODAL':
       return { ...state, editCustomerOpened: true };
     case 'CLOSE_EDIT_CUSTOMER_MODAL':
       return { ...state, editCustomerOpened: false };
-    
+
     case 'OPEN_DELETE_CUSTOMER_MODAL':
       return { ...state, deleteCustomerOpened: true };
     case 'CLOSE_DELETE_CUSTOMER_MODAL':
       return { ...state, deleteCustomerOpened: false };
-    
+
     case 'OPEN_ADD_MATTER_MODAL':
       return { ...state, addMatterOpened: true };
     case 'CLOSE_ADD_MATTER_MODAL':
       return { ...state, addMatterOpened: false };
-    
+
     case 'OPEN_EDIT_MATTER_MODAL':
       return { ...state, editMatterOpened: true };
     case 'CLOSE_EDIT_MATTER_MODAL':
       return { ...state, editMatterOpened: false };
-    
+
     case 'OPEN_DELETE_MATTER_MODAL':
       return { ...state, deleteMatterOpened: true };
     case 'CLOSE_DELETE_MATTER_MODAL':
       return { ...state, deleteMatterOpened: false };
-    
+
     default:
       return state;
   }
@@ -213,16 +218,20 @@ export const DashboardContext = createContext<{
 } | null>(null);
 
 // Provider component
-export function DashboardProvider({ children, initialCustomers }: { children: ReactNode; initialCustomers: Customer[] }) {
+export function DashboardProvider({
+  children,
+  initialCustomers,
+}: {
+  children: ReactNode;
+  initialCustomers: Customer[];
+}) {
   const [state, dispatch] = useReducer(dashboardReducer, {
     ...initialState,
     customers: initialCustomers,
   });
 
   return (
-    <DashboardContext.Provider value={{ state, dispatch }}>
-      {children}
-    </DashboardContext.Provider>
+    <DashboardContext.Provider value={{ state, dispatch }}>{children}</DashboardContext.Provider>
   );
 }
 

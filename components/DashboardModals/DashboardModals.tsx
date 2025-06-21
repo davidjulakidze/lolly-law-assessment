@@ -1,13 +1,13 @@
 'use client';
 
+import { AddCustomer } from '@/components/AddCustomer/AddCustomer';
+import { AddMatter } from '@/components/AddMatter/AddMatter';
+import { DeleteCustomer } from '@/components/DeleteCustomer/DeleteCustomer';
+import { DeleteMatter } from '@/components/DeleteMatter/DeleteMatter';
+import { EditCustomer } from '@/components/EditCustomer/EditCustomer';
+import { EditMatter } from '@/components/EditMatter/EditMatter';
 import { useDashboard } from '@/contexts/DashboardContext';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
-import { AddCustomer } from '@/components/AddCustomer/AddCustomer';
-import { EditCustomer } from '@/components/EditCustomer/EditCustomer';
-import { DeleteCustomer } from '@/components/DeleteCustomer/DeleteCustomer';
-import { AddMatter } from '@/components/AddMatter/AddMatter';
-import { EditMatter } from '@/components/EditMatter/EditMatter';
-import { DeleteMatter } from '@/components/DeleteMatter/DeleteMatter';
 
 export function DashboardModals() {
   const { state, dispatch } = useDashboard();

@@ -1,6 +1,7 @@
 'use client';
 
-import { IconEdit, IconPlus, IconTrash, IconAlertCircle } from '@tabler/icons-react';
+import React, { useEffect, useState } from 'react';
+import { IconAlertCircle, IconEdit, IconPlus, IconTrash } from '@tabler/icons-react';
 import {
   Alert,
   Badge,
@@ -9,6 +10,7 @@ import {
   Center,
   Group,
   Loader,
+  Pagination,
   ScrollArea,
   Stack,
   Text,
@@ -22,10 +24,24 @@ export function MatterList() {
   const { state, dispatch } = useDashboard();
   const { handleEditMatter, handleDeleteMatter } = useDashboardActions();
   const { selectedCustomer, loadingMatters, mattersError } = state;
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   const handleAddMatter = () => {
     dispatch({ type: 'OPEN_ADD_MATTER_MODAL' });
-  };  if (!selectedCustomer) {
+  };
+
+  const matters = selectedCustomer?.matters || [];
+
+  const totalPages = Math.ceil(matters.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedMatters = matters.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCustomer?.id]);
+  if (!selectedCustomer) {
     return (
       <Card shadow="sm" padding="lg" radius="md" withBorder>
         <Center h="100%">
@@ -42,26 +58,15 @@ export function MatterList() {
       <Stack gap="md" h="100%">
         <Group justify="space-between">
           <Title order={3}>Matters</Title>
-          <Button
-            variant="filled"
-            leftSection={<IconPlus size={16} />}
-            onClick={handleAddMatter}
-          >
+          <Button variant="filled" leftSection={<IconPlus size={16} />} onClick={handleAddMatter}>
             Add Matter
           </Button>
         </Group>
-
         {mattersError && (
-          <Alert
-            icon={<IconAlertCircle size={16} />}
-            title="Error"
-            color="red"
-            variant="light"
-          >
+          <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" variant="light">
             {mattersError}
           </Alert>
-        )}
-
+        )}{' '}
         {loadingMatters ? (
           <Center style={{ flex: 1 }}>
             <Loader />
@@ -69,8 +74,8 @@ export function MatterList() {
         ) : (
           <ScrollArea style={{ flex: 1 }} offsetScrollbars>
             <Stack gap="xs">
-              {selectedCustomer.matters && selectedCustomer.matters.length > 0 ? (
-                selectedCustomer.matters.map((matter) => (
+              {paginatedMatters.length > 0 ? (
+                paginatedMatters.map((matter) => (
                   <MatterListItem
                     key={matter.id}
                     matter={matter}
@@ -95,7 +100,25 @@ export function MatterList() {
                 </Center>
               )}
             </Stack>
-          </ScrollArea>        )}
+          </ScrollArea>
+        )}
+        {totalPages > 1 && (
+          <Group justify="center" mt="auto">
+            <Pagination
+              value={currentPage}
+              onChange={setCurrentPage}
+              total={totalPages}
+              size="sm"
+              withEdges
+            />
+          </Group>
+        )}
+        {matters.length > 0 && (
+          <Text size="xs" c="dimmed" ta="center">
+            Showing {startIndex + 1}-{Math.min(endIndex, matters.length)} of {matters.length}{' '}
+            matters
+          </Text>
+        )}
       </Stack>
     </Card>
   );
@@ -133,11 +156,7 @@ function MatterListItem({ matter, onEdit, onDelete }: Readonly<MatterListItemPro
               {matter.description}
             </Text>
           )}
-          <Badge
-            variant="light"
-            color={getStatusColor(matter.status)}
-            size="sm"
-          >
+          <Badge variant="light" color={getStatusColor(matter.status)} size="sm">
             {matter.status}
           </Badge>
         </div>

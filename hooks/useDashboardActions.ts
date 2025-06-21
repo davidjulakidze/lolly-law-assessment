@@ -9,7 +9,7 @@ export function useDashboardActions() {
   const fetchCustomerMatters = async (customerId: number) => {
     dispatch({ type: 'SET_LOADING_MATTERS', payload: true });
     dispatch({ type: 'SET_MATTERS_ERROR', payload: null });
-    
+
     try {
       const response = await fetch(`/api/customers/${customerId}/matters`);
       if (!response.ok) {

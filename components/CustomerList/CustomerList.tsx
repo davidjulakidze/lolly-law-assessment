@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { IconSearch, IconPlus } from '@tabler/icons-react';
+import { IconPlus, IconSearch } from '@tabler/icons-react';
 import {
   Avatar,
   Button,
@@ -26,7 +26,9 @@ export function CustomerList() {
 
   const filteredCustomers = state.customers.filter(
     (customer) =>
-      `${customer.firstName} ${customer.lastName}`.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+      `${customer.firstName} ${customer.lastName}`
+        .toLowerCase()
+        .includes(state.searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(state.searchTerm.toLowerCase())
   );
 
@@ -50,11 +52,7 @@ export function CustomerList() {
       <Stack gap="md" h="100%">
         <Group justify="space-between">
           <Title order={3}>Customers</Title>
-          <Button
-            variant="filled"
-            leftSection={<IconPlus size={16} />}
-            onClick={handleAddCustomer}
-          >
+          <Button variant="filled" leftSection={<IconPlus size={16} />} onClick={handleAddCustomer}>
             Add Customer
           </Button>
         </Group>
@@ -78,7 +76,9 @@ export function CustomerList() {
             ))}
             {filteredCustomers.length === 0 && (
               <Text c="dimmed" ta="center" py="xl">
-                {state.searchTerm ? 'No customers found matching your search' : 'No customers found'}
+                {state.searchTerm
+                  ? 'No customers found matching your search'
+                  : 'No customers found'}
               </Text>
             )}
           </Stack>
@@ -98,7 +98,8 @@ export function CustomerList() {
 
         {filteredCustomers.length > 0 && (
           <Text size="xs" c="dimmed" ta="center">
-            Showing {startIndex + 1}-{Math.min(endIndex, filteredCustomers.length)} of {filteredCustomers.length} customers
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredCustomers.length)} of{' '}
+            {filteredCustomers.length} customers
           </Text>
         )}
       </Stack>
@@ -126,7 +127,9 @@ function CustomerListItem({ customer, isSelected, onSelect }: Readonly<CustomerL
       }}
       onClick={() => onSelect(customer)}
     >
-      <Group gap="sm">        <Avatar color="blue" radius="xl">
+      <Group gap="sm">
+        {' '}
+        <Avatar color="blue" radius="xl">
           {customer.firstName.charAt(0).toUpperCase()}
         </Avatar>
         <div style={{ flex: 1 }}>

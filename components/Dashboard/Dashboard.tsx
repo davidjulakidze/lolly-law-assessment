@@ -1,10 +1,10 @@
 'use client';
 
 import { Container, Grid, Title } from '@mantine/core';
-import { CustomerList } from '@/components/CustomerList';
 import { CustomerDetails } from '@/components/CustomerDetails';
-import { MatterList } from '@/components/MatterList';
+import { CustomerList } from '@/components/CustomerList';
 import { DashboardModals } from '@/components/DashboardModals';
+import { MatterList } from '@/components/MatterList';
 
 export function Dashboard() {
   return (

@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers';
 import { Dashboard } from '@/components/Dashboard/Dashboard';
 import { DashboardProvider } from '@/contexts/DashboardContext';
-import { Customer } from '@/types';
 import { logger } from '@/server-utils/logger';
+import { Customer } from '@/types';
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
