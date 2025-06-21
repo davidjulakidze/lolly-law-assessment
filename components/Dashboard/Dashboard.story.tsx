@@ -4,4 +4,4 @@ export default {
   title: 'Dashboard',
 };
 
-export const Usage = () => <Dashboard customers={[]} />;
+export const Usage = () => <Dashboard />;
