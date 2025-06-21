@@ -24,30 +24,41 @@ docker-setup.bat
 
 ### Option 2: Manual Setup
 
-1. **Create environment file:**
+1. **Clone the repository:**
+   ```bash
+   git clone
+   ```
+
+2. **Create environment file:**
    ```bash
    cp .env.example .env
    ```
    
-2. **Edit the .env file with your configuration:**
+3. **Edit the .env file with your configuration:**
    ```env
    DATABASE_URL="postgresql://postgres:password@db:5432/lollylaw"
    JWT_SECRET="your-super-secret-jwt-key"
    url="http://localhost:3000"
    ```
 
-3. **Build and start the services:**
+4. **Build and start the services:**
    ```bash
    docker-compose up --build -d
    ```
 
-4. **Run database migrations:**
+5. **Run database migrations:**
    ```bash
    docker-compose exec app npx prisma migrate deploy
    docker-compose exec app npx prisma generate
    ```
 
-### Option 3: Manual Development Setup
+### Option 3: Manual Local Setup
+
+0. **Ensure you have Node.js (18.x or later) and Yarn installed. If not, you can use Corepack to manage Yarn versions:**
+   ```bash
+   corepack enable
+   corepack prepare yarn@stable --activate
+   ```
 
 1. **Clone the repository:**
    ```bash
@@ -79,9 +90,14 @@ docker-setup.bat
     npx prisma generate
     ```
 
-7. **Start the development server:**
+7. **Build the application:**
     ```bash
-    yarn dev
+    yarn build
+    ```
+
+8. **Start the application:**
+    ```bash
+    yarn start
     ```
 
 ## Services

@@ -1,5 +1,5 @@
 # Use the official Node.js 18 image as base
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Enable Corepack for modern Yarn support
 RUN corepack enable
