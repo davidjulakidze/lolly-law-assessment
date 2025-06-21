@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { Dashboard } from '@/components/Dashboard/Dashboard';
-import { Customer } from '@/generated/prisma';
+import { DashboardProvider } from '@/contexts/DashboardContext';
+import { Customer } from '@/types';
 import { logger } from '@/server-utils/logger';
 
 export default async function DashboardPage() {
@@ -20,5 +21,9 @@ export default async function DashboardPage() {
     customers = await customersResponse.json();
   }
 
-  return <Dashboard customers={customers} />;
+  return (
+    <DashboardProvider initialCustomers={customers}>
+      <Dashboard />
+    </DashboardProvider>
+  );
 }

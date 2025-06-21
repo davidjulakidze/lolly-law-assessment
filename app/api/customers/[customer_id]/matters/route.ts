@@ -73,7 +73,7 @@ export async function POST(
     }
     const body = await request.json();
     const { title, description, status } = body;
-    if (!title || !description || !status) {
+    if (!title || !status) {
       return new NextResponse(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
