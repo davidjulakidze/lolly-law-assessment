@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     response.headers.set(
       'Set-Cookie',
-      `token=${token}; HttpOnly; Secure; Path=/; Max-Age=${rememberMe ? 604800 : 3600}; SameSite=Strict`
+      `token=${token}; HttpOnly; ${process.env.NODE_ENV === 'development' ? '' : 'Secure;'} Path=/; Max-Age=${rememberMe ? 604800 : 3600}; SameSite=Strict`
     );
     return response;
   } catch (error) {

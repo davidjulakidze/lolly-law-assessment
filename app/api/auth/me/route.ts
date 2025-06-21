@@ -4,8 +4,7 @@ import { PrismaClient } from '@/generated/prisma';
 import { logger } from '@/server-utils/logger';
 
 export async function GET(request: NextRequest) {
-  const cookies = request.cookies.getAll();
-  const token = cookies.find(cookie => cookie.name === 'token')?.value;
+  const token = request.cookies.get('token')?.value;
   const prisma = new PrismaClient();
   if (!token) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
