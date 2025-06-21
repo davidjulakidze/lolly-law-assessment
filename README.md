@@ -602,10 +602,11 @@ Valid status values for matters:
 
 
 ## Things I'd improve
-
+- **Refresh Token**: Implement a refresh token mechanism to allow users to stay logged in without needing to re-enter credentials frequently.
+- **Delete Enhancements**: Currently you cannot delete a customer if they have matters, this could be improved by allowing deletion of customers with a confirmation prompt or cascade delete option.
+- **RBAC**: Implement Role-Based Access Control (RBAC) to manage user permissions more effectively and allow Admin users to manage other users.
 - **Error Handling**: Implement more robust error handling and logging.
 - **Testing**: Add unit and integration tests for all endpoints.
 - **Logging**: Implement structured logging for better observability.
 - **Rate Limiting**: Add rate limiting to prevent abuse of API endpoints.
 - **Sorting**: Implement sorting options for customers and matters.
-- **Delete Enhancements**: Currently you cannot delete a customer if they have matters, this could be improved by allowing deletion of customers with a confirmation prompt or cascade delete option.
