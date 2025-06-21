@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { IconAlertCircle, IconEdit, IconPlus, IconTrash } from '@tabler/icons-react';
+import React, { useEffect, useState } from 'react';
+import { IconAlertCircle, IconEdit, IconPlus, IconSearch, IconTrash } from '@tabler/icons-react';
 import {
   Alert,
   Badge,
@@ -14,8 +14,10 @@ import {
   ScrollArea,
   Stack,
   Text,
+  TextInput,
   Title,
 } from '@mantine/core';
+import { useDebouncedValue } from '@mantine/hooks';
 import { maxMatterItemsPerPage as itemsPerPage } from '@/constants';
 import { useDashboard } from '@/contexts/DashboardContext';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
@@ -25,6 +27,23 @@ export function MatterList() {
   const { state, dispatch } = useDashboard();
   const { fetchCustomerMatters, handleEditMatter, handleDeleteMatter } = useDashboardActions();
   const { selectedCustomer, loadingMatters, mattersError } = state;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 300);
+
+  useEffect(() => {
+    setSearchTerm('');
+  }, [selectedCustomer?.id]);
+
+  useEffect(() => {
+    if (selectedCustomer) {
+      fetchCustomerMatters(
+        selectedCustomer.id,
+        state.matterPagination?.page ?? 1,
+        itemsPerPage,
+        debouncedSearchTerm
+      );
+    }
+  }, [selectedCustomer?.id, debouncedSearchTerm]);
 
   const handleAddMatter = () => {
     dispatch({ type: 'OPEN_ADD_MATTER_MODAL' });
@@ -32,8 +51,12 @@ export function MatterList() {
 
   const handlePageChange = (page: number) => {
     if (selectedCustomer) {
-      fetchCustomerMatters(selectedCustomer.id, page, itemsPerPage);
+      fetchCustomerMatters(selectedCustomer.id, page, itemsPerPage, debouncedSearchTerm);
     }
+  };
+
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
   };
 
   const matters = selectedCustomer?.matters ?? [];
@@ -59,6 +82,13 @@ export function MatterList() {
             Add Matter
           </Button>
         </Group>
+
+        <TextInput
+          placeholder="Search matters..."
+          leftSection={<IconSearch size={16} />}
+          value={searchTerm}
+          onChange={(event) => handleSearch(event.currentTarget.value)}
+        />
 
         {mattersError && (
           <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" variant="light">
@@ -86,15 +116,19 @@ export function MatterList() {
                 <Center py="xl">
                   <Stack align="center" gap="md">
                     <Text c="dimmed" ta="center">
-                      No matters found for this customer
+                      {searchTerm
+                        ? 'No matters found matching your search'
+                        : 'No matters found for this customer'}
                     </Text>
-                    <Button
-                      variant="light"
-                      leftSection={<IconPlus size={16} />}
-                      onClick={handleAddMatter}
-                    >
-                      Create First Matter
-                    </Button>
+                    {!searchTerm && (
+                      <Button
+                        variant="light"
+                        leftSection={<IconPlus size={16} />}
+                        onClick={handleAddMatter}
+                      >
+                        Create First Matter
+                      </Button>
+                    )}
                   </Stack>
                 </Center>
               )}

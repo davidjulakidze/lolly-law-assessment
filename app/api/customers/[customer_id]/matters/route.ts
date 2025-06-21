@@ -29,15 +29,27 @@ export async function GET(
     const { searchParams } = request.nextUrl;
     const page = parseInt(searchParams.get('page') ?? '1', 10);
     const limit = parseInt(searchParams.get('limit') ?? '10', 10);
+    const search = searchParams.get('search') ?? '';
 
     const skip = (page - 1) * limit;
 
+    const whereClause = {
+      customerId: Number(customer_id),
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: 'insensitive' as const } },
+          { description: { contains: search, mode: 'insensitive' as const } },
+          { status: { contains: search, mode: 'insensitive' as const } },
+        ],
+      }),
+    };
+
     const totalCount = await prisma.matter.count({
-      where: { customerId: Number(customer_id) },
+      where: whereClause,
     });
 
     const matters = await prisma.matter.findMany({
-      where: { customerId: Number(customer_id) },
+      where: whereClause,
       select: {
         id: true,
         title: true,

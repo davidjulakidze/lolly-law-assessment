@@ -33,7 +33,12 @@ export function useDashboardActions() {
     }
   };
 
-  const fetchCustomerMatters = async (customerId: number, page: number = 1, limit: number = 10) => {
+  const fetchCustomerMatters = async (
+    customerId: number,
+    page: number = 1,
+    limit: number = 10,
+    search: string = ''
+  ) => {
     dispatch({ type: 'SET_LOADING_MATTERS', payload: true });
     dispatch({ type: 'SET_MATTERS_ERROR', payload: null });
 
@@ -41,6 +46,7 @@ export function useDashboardActions() {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
+        ...(search && { search }),
       });
 
       const response = await fetch(`/api/customers/${customerId}/matters?${params}`);
