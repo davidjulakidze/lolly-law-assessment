@@ -1,10 +1,10 @@
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
-import React from 'react';
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { NavBar } from '@/components/NavBar/NavBar';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { theme } from '../theme';
 
 export const metadata = {
@@ -26,7 +26,9 @@ export default async function RootLayout({ children }: Readonly<{ children: any 
       <body>
         <MantineProvider theme={theme}>
           <Notifications />
-          <NavBar title="LollyLaw">{children}</NavBar>
+          <AuthProvider>
+            <NavBar title="LollyLaw">{children}</NavBar>
+          </AuthProvider>
         </MantineProvider>
       </body>
     </html>

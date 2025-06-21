@@ -20,6 +20,7 @@ import {
 } from '@mantine/core';
 import { isEmail, useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
+import { useAuth } from '@/contexts/AuthContext';
 import classes from './Login.module.css';
 
 interface LoginFormValues {
@@ -40,6 +41,7 @@ interface SignUpFormValues {
 export function Login() {
   const [activeTab, setActiveTab] = useState<string | null>('login');
   const router = useRouter();
+  const { login } = useAuth();
   const loginForm = useForm<LoginFormValues>({
     initialValues: {
       email: '',
@@ -73,30 +75,23 @@ export function Login() {
   });
 
   const handleLoginSubmit = async (values: LoginFormValues) => {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(values),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      notifications.show({
-        title: 'Login Failed',
-        message: errorData.error ?? 'An error occurred during login',
-        color: 'red',
-      });
-    } else {
-      const data = await response.json();
+    const success = await login(values.email, values.password, values.rememberMe);
+    
+    if (success) {
       notifications.show({
         title: 'Login Successful',
-        message: `Welcome back, ${data.user.firstName}!`,
+        message: 'Welcome back!',
         color: 'green',
       });
+      loginForm.reset();
+      router.push('/dashboard');
+    } else {
+      notifications.show({
+        title: 'Login Failed',
+        message: 'Please check your credentials and try again',
+        color: 'red',
+      });
     }
-    loginForm.reset();
-    router.push('/dashboard');
   };
 
   const handleSignUpSubmit = async (values: SignUpFormValues) => {

@@ -3,7 +3,6 @@
 import { createContext, ReactNode, useContext, useMemo, useReducer } from 'react';
 import { Customer, Matter } from '@/types';
 
-// State interface
 export interface DashboardState {
   // Customer state
   customers: Customer[];
@@ -28,7 +27,6 @@ export interface DashboardState {
   deleteMatterOpened: boolean;
 }
 
-// Action types
 export type DashboardAction =
   // Customer actions
   | { type: 'SET_CUSTOMERS'; payload: Customer[] }
@@ -85,7 +83,6 @@ export const initialState: DashboardState = {
   deleteMatterOpened: false,
 };
 
-// Reducer function
 export function dashboardReducer(state: DashboardState, action: DashboardAction): DashboardState {
   switch (action.type) {
     // Customer actions
@@ -236,13 +233,11 @@ export function dashboardReducer(state: DashboardState, action: DashboardAction)
   }
 }
 
-// Context
 export const DashboardContext = createContext<{
   state: DashboardState;
   dispatch: React.Dispatch<DashboardAction>;
 } | null>(null);
 
-// Provider component
 export function DashboardProvider({
   children,
   initialCustomers,
@@ -260,7 +255,6 @@ export function DashboardProvider({
   return <DashboardContext.Provider value={contextValue}>{children}</DashboardContext.Provider>;
 }
 
-// Custom hook to use the dashboard context
 export function useDashboard() {
   const context = useContext(DashboardContext);
   if (!context) {

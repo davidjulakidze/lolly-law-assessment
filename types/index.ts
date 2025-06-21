@@ -20,3 +20,9 @@ export interface Matter {
   status: string;
   customerId: number;
 }
+export interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
