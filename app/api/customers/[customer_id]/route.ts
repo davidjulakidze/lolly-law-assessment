@@ -1,5 +1,6 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/generated/prisma';
+import { verifyAuthToken } from '@/server-utils/auth';
 import { logger } from '@/server-utils/logger';
 
 export async function GET(
@@ -7,18 +8,17 @@ export async function GET(
   { params }: { params: Promise<{ customer_id: string }> }
 ) {
   const prisma = new PrismaClient();
-  const token = request.cookies.get('token')?.value;
-  const { customer_id } = await params;
-  if (!token) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
+    const userId = await verifyAuthToken(request);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const { customer_id } = await params;
     if (customer_id && isNaN(Number(customer_id))) {
-      return new Response(JSON.stringify({ error: 'Invalid customer ID' }), {
+      return new NextResponse(JSON.stringify({ error: 'Invalid customer ID' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -36,19 +36,19 @@ export async function GET(
     });
 
     if (!customer) {
-      return new Response(JSON.stringify({ error: 'Customer not found' }), {
+      return new NextResponse(JSON.stringify({ error: 'Customer not found' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    return new Response(JSON.stringify(customer), {
+    return new NextResponse(JSON.stringify(customer), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     logger.error('Error fetching customer:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+    return new NextResponse(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -62,18 +62,17 @@ export async function PUT(
   { params }: { params: Promise<{ customer_id: string }> }
 ) {
   const prisma = new PrismaClient();
-  const token = request.cookies.get('token')?.value;
-  const { customer_id } = await params;
-  if (!token) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
+    const userId = await verifyAuthToken(request);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const { customer_id } = await params;
     if (customer_id && isNaN(Number(customer_id))) {
-      return new Response(JSON.stringify({ error: 'Invalid customer ID' }), {
+      return new NextResponse(JSON.stringify({ error: 'Invalid customer ID' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -82,7 +81,7 @@ export async function PUT(
     const { firstName, lastName, email, phone } = data;
 
     if (!firstName || !lastName || !email || !phone) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+      return new NextResponse(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -101,13 +100,13 @@ export async function PUT(
       },
     });
 
-    return new Response(JSON.stringify(updatedCustomer), {
+    return new NextResponse(JSON.stringify(updatedCustomer), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     logger.error('Error updating customer:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+    return new NextResponse(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -121,18 +120,18 @@ export async function DELETE(
   { params }: { params: Promise<{ customer_id: string }> }
 ) {
   const prisma = new PrismaClient();
-  const token = request.cookies.get('token')?.value;
-  const { customer_id } = await params;
-  if (!token) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
+    const userId = await verifyAuthToken(request);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const { customer_id } = await params;
+
     if (customer_id && isNaN(Number(customer_id))) {
-      return new Response(JSON.stringify({ error: 'Invalid customer ID' }), {
+      return new NextResponse(JSON.stringify({ error: 'Invalid customer ID' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -141,13 +140,13 @@ export async function DELETE(
       where: { id: Number(customer_id) },
     });
 
-    return new Response(JSON.stringify({ message: 'Customer deleted successfully' }), {
+    return new NextResponse(JSON.stringify({ message: 'Customer deleted successfully' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     logger.error('Error deleting customer:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+    return new NextResponse(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

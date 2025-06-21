@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { IconAlertCircle, IconEdit, IconPlus, IconTrash } from '@tabler/icons-react';
 import {
   Alert,
@@ -23,23 +23,21 @@ import { Matter } from '@/types';
 
 export function MatterList() {
   const { state, dispatch } = useDashboard();
-  const { handleEditMatter, handleDeleteMatter, setMatterPage } = useDashboardActions();
+  const { fetchCustomerMatters, handleEditMatter, handleDeleteMatter } = useDashboardActions();
   const { selectedCustomer, loadingMatters, mattersError } = state;
 
   const handleAddMatter = () => {
     dispatch({ type: 'OPEN_ADD_MATTER_MODAL' });
   };
 
-  const matters = selectedCustomer?.matters || [];
+  const handlePageChange = (page: number) => {
+    if (selectedCustomer) {
+      fetchCustomerMatters(selectedCustomer.id, page, itemsPerPage);
+    }
+  };
 
-  const totalPages = Math.ceil(matters.length / itemsPerPage);
-  const startIndex = (state.matterCurrentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedMatters = matters.slice(startIndex, endIndex);
+  const matters = selectedCustomer?.matters ?? [];
 
-  useEffect(() => {
-    dispatch({ type: 'RESET_MATTER_PAGE' });
-  }, [selectedCustomer?.id, dispatch]);
   if (!selectedCustomer) {
     return (
       <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -61,11 +59,13 @@ export function MatterList() {
             Add Matter
           </Button>
         </Group>
+
         {mattersError && (
           <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" variant="light">
             {mattersError}
           </Alert>
-        )}{' '}
+        )}
+
         {loadingMatters ? (
           <Center style={{ flex: 1 }}>
             <Loader />
@@ -73,8 +73,8 @@ export function MatterList() {
         ) : (
           <ScrollArea style={{ flex: 1 }} offsetScrollbars>
             <Stack gap="xs">
-              {paginatedMatters.length > 0 ? (
-                paginatedMatters.map((matter) => (
+              {matters.length > 0 ? (
+                matters.map((matter) => (
                   <MatterListItem
                     key={matter.id}
                     matter={matter}
@@ -101,21 +101,27 @@ export function MatterList() {
             </Stack>
           </ScrollArea>
         )}
-        {totalPages > 1 && (
+
+        {state.matterPagination && state.matterPagination.totalPages > 1 && (
           <Group justify="center" mt="auto">
             <Pagination
-              value={state.matterCurrentPage}
-              onChange={setMatterPage}
-              total={totalPages}
+              value={state.matterPagination.page}
+              onChange={handlePageChange}
+              total={state.matterPagination.totalPages}
               size="sm"
               withEdges
             />
           </Group>
         )}
-        {matters.length > 0 && (
+
+        {state.matterPagination && matters.length > 0 && (
           <Text size="xs" c="dimmed" ta="center">
-            Showing {startIndex + 1}-{Math.min(endIndex, matters.length)} of {matters.length}{' '}
-            matters
+            Showing {(state.matterPagination.page - 1) * state.matterPagination.limit + 1}-
+            {Math.min(
+              state.matterPagination.page * state.matterPagination.limit,
+              state.matterPagination.totalCount
+            )}{' '}
+            of {state.matterPagination.totalCount} matters
           </Text>
         )}
       </Stack>

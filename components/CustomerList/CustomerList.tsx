@@ -1,11 +1,15 @@
 'use client';
 
-import { IconPlus, IconSearch } from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
+import { IconAlertCircle, IconPlus, IconSearch } from '@tabler/icons-react';
 import {
+  Alert,
   Avatar,
   Button,
   Card,
+  Center,
   Group,
+  Loader,
   Pagination,
   ScrollArea,
   Stack,
@@ -13,6 +17,7 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
+import { useDebouncedValue } from '@mantine/hooks';
 import { maxCustomerItemsPerPage as itemsPerPage } from '@/constants';
 import { useDashboard } from '@/contexts/DashboardContext';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
@@ -20,30 +25,28 @@ import { Customer } from '@/types';
 
 export function CustomerList() {
   const { state, dispatch } = useDashboard();
-  const { handleCustomerSelect, setSearchTerm, setCustomerPage } = useDashboardActions();
+  const { fetchCustomers, handleCustomerSelect } = useDashboardActions();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 300);
 
-  const filteredCustomers = state.customers.filter(
-    (customer) =>
-      `${customer.firstName} ${customer.lastName}`
-        .toLowerCase()
-        .includes(state.searchTerm.toLowerCase()) ||
-      customer.email.toLowerCase().includes(state.searchTerm.toLowerCase())
-  );
+  // Fetch customers when component mounts or when search/pagination changes
+  useEffect(() => {
+    fetchCustomers(state.customerPagination?.page ?? 1, itemsPerPage, debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
 
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
-  const startIndex = (state.customerCurrentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedCustomers = filteredCustomers.slice(startIndex, endIndex);
-
-  // Reset to first page when search term changes
   const handleSearch = (value: string) => {
     setSearchTerm(value);
+    dispatch({ type: 'SET_SEARCH_TERM', payload: value });
+  };
+
+  const handlePageChange = (page: number) => {
+    fetchCustomers(page, itemsPerPage, debouncedSearchTerm);
   };
 
   const handleAddCustomer = () => {
     dispatch({ type: 'OPEN_ADD_CUSTOMER_MODAL' });
   };
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder mah="80vh">
       <Stack gap="md" h="100%">
@@ -57,46 +60,60 @@ export function CustomerList() {
         <TextInput
           placeholder="Search customers..."
           leftSection={<IconSearch size={16} />}
-          value={state.searchTerm}
+          value={searchTerm}
           onChange={(event) => handleSearch(event.currentTarget.value)}
         />
 
-        <ScrollArea style={{ flex: 1 }} offsetScrollbars>
-          <Stack gap="xs">
-            {paginatedCustomers.map((customer) => (
-              <CustomerListItem
-                key={customer.id}
-                customer={customer}
-                isSelected={state.selectedCustomer?.id === customer.id}
-                onSelect={(customer) => handleCustomerSelect(customer, state.selectedCustomer)}
-              />
-            ))}
-            {filteredCustomers.length === 0 && (
-              <Text c="dimmed" ta="center" py="xl">
-                {state.searchTerm
-                  ? 'No customers found matching your search'
-                  : 'No customers found'}
-              </Text>
-            )}
-          </Stack>
-        </ScrollArea>
+        {state.customersError && (
+          <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red" variant="light">
+            {state.customersError}
+          </Alert>
+        )}
 
-        {totalPages > 1 && (
+        {state.loadingCustomers ? (
+          <Center style={{ flex: 1 }}>
+            <Loader />
+          </Center>
+        ) : (
+          <ScrollArea style={{ flex: 1 }} offsetScrollbars>
+            <Stack gap="xs">
+              {state.customers.map((customer) => (
+                <CustomerListItem
+                  key={customer.id}
+                  customer={customer}
+                  isSelected={state.selectedCustomer?.id === customer.id}
+                  onSelect={(customer) => handleCustomerSelect(customer, state.selectedCustomer)}
+                />
+              ))}
+              {state.customers.length === 0 && !state.loadingCustomers && (
+                <Text c="dimmed" ta="center" py="xl">
+                  {searchTerm ? 'No customers found matching your search' : 'No customers found'}
+                </Text>
+              )}
+            </Stack>
+          </ScrollArea>
+        )}
+
+        {state.customerPagination && state.customerPagination.totalPages > 1 && (
           <Group justify="center" mt="auto">
             <Pagination
-              value={state.customerCurrentPage}
-              onChange={setCustomerPage}
-              total={totalPages}
+              value={state.customerPagination.page}
+              onChange={handlePageChange}
+              total={state.customerPagination.totalPages}
               size="sm"
               withEdges
             />
           </Group>
         )}
 
-        {filteredCustomers.length > 0 && (
+        {state.customerPagination && state.customers.length > 0 && (
           <Text size="xs" c="dimmed" ta="center">
-            Showing {startIndex + 1}-{Math.min(endIndex, filteredCustomers.length)} of{' '}
-            {filteredCustomers.length} customers
+            Showing {(state.customerPagination.page - 1) * state.customerPagination.limit + 1}-
+            {Math.min(
+              state.customerPagination.page * state.customerPagination.limit,
+              state.customerPagination.totalCount
+            )}{' '}
+            of {state.customerPagination.totalCount} customers
           </Text>
         )}
       </Stack>

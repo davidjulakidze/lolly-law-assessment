@@ -4,24 +4,22 @@ import { PrismaClient } from '@/generated/prisma';
 import { logger } from '@/server-utils/logger';
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const { firstName, lastName, email, password } = body;
-
   const prisma = new PrismaClient();
-
   try {
+    const body = await request.json();
+    const { firstName, lastName, email, password } = body;
+    if (!firstName || !lastName || !email || !password) {
+      return new NextResponse(JSON.stringify({ error: 'All fields are required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
       return new NextResponse(JSON.stringify({ error: 'User already exists' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-    if (!firstName || !lastName || !email || !password) {
-      return new NextResponse(JSON.stringify({ error: 'All fields are required' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });

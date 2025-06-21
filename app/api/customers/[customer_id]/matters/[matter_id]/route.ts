@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/generated/prisma';
+import { verifyAuthToken } from '@/server-utils/auth';
 import { logger } from '@/server-utils/logger';
 
 export async function GET(
@@ -7,15 +8,16 @@ export async function GET(
   { params }: { params: Promise<{ customer_id: string; matter_id: string }> }
 ) {
   const prisma = new PrismaClient();
-  const token = request.cookies.get('token')?.value;
-  const { customer_id, matter_id } = await params;
-  if (!token) {
-    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
   try {
+    const userId = await verifyAuthToken(request);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const { customer_id, matter_id } = await params;
+
     if (isNaN(Number(customer_id)) || isNaN(Number(matter_id))) {
       return new NextResponse(JSON.stringify({ error: 'Invalid customer or matter ID' }), {
         status: 400,
@@ -64,15 +66,16 @@ export async function PUT(
   { params }: { params: Promise<{ customer_id: string; matter_id: string }> }
 ) {
   const prisma = new PrismaClient();
-  const token = request.cookies.get('token')?.value;
-  const { customer_id, matter_id } = await params;
-  if (!token) {
-    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
   try {
+    const userId = await verifyAuthToken(request);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const { customer_id, matter_id } = await params;
+
     if (isNaN(Number(customer_id)) || isNaN(Number(matter_id))) {
       return new NextResponse(JSON.stringify({ error: 'Invalid customer or matter ID' }), {
         status: 400,
@@ -121,15 +124,16 @@ export async function DELETE(
   { params }: { params: Promise<{ customer_id: string; matter_id: string }> }
 ) {
   const prisma = new PrismaClient();
-  const token = request.cookies.get('token')?.value;
-  const { customer_id, matter_id } = await params;
-  if (!token) {
-    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
   try {
+    const userId = await verifyAuthToken(request);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const { customer_id, matter_id } = await params;
+
     if (isNaN(Number(customer_id)) || isNaN(Number(matter_id))) {
       return new NextResponse(JSON.stringify({ error: 'Invalid customer or matter ID' }), {
         status: 400,

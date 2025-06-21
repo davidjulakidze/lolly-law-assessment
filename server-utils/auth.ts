@@ -1,4 +1,6 @@
 import { cookies } from 'next/headers';
+import { NextRequest } from 'next/server';
+import jwt from 'jsonwebtoken';
 import { User } from '@/types';
 
 export interface AuthResult {
@@ -33,4 +35,20 @@ export async function getServerSideAuth(): Promise<AuthResult> {
   } catch {
     return { user: null, authenticated: false };
   }
+}
+
+export async function verifyAuthToken(request: NextRequest): Promise<number | null> {
+  const token = request.cookies.get('token')?.value;
+  if (!token) {
+    return null;
+  }
+  const user = jwt.verify(token, process.env.JWT_SECRET!);
+
+  if (!user || typeof user !== 'object' || !('userId' in user)) {
+    return null;
+  }
+  if (typeof user.userId !== 'number') {
+    return null;
+  }
+  return user.userId;
 }

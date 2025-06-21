@@ -2,12 +2,12 @@ import { cookies } from 'next/headers';
 import { Dashboard } from '@/components/Dashboard/Dashboard';
 import { DashboardProvider } from '@/contexts/DashboardContext';
 import { logger } from '@/server-utils/logger';
-import { Customer } from '@/types';
+import { Customer, CustomersResponse } from '@/types';
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get('token')?.value;
-  const customersResponse = await fetch(`${process.env.url}/api/customers`, {
+  const customersResponse = await fetch(`${process.env.url}/api/customers?page=1&limit=10`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -18,7 +18,8 @@ export default async function DashboardPage() {
   if (!customersResponse.ok) {
     logger.error('Failed to fetch customers');
   } else {
-    customers = await customersResponse.json();
+    const data: CustomersResponse = await customersResponse.json();
+    customers = data.customers;
   }
 
   return (

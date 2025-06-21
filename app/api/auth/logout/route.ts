@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifyAuthToken } from '@/server-utils/auth';
 
 export async function POST(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
-
-  if (!token) {
-    return new NextResponse(JSON.stringify({ message: 'No token provided' }), {
+  const userId = await verifyAuthToken(request);
+  if (!userId) {
+    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
     });
   }
-
   const response = new NextResponse(JSON.stringify({ message: 'Logged out successfully' }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },

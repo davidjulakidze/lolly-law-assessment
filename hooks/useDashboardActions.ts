@@ -1,22 +1,56 @@
 'use client';
 
 import { useDashboard } from '@/contexts/DashboardContext';
-import { Matter } from '@/types';
+import { CustomersResponse, Matter, MattersResponse } from '@/types';
 
 export function useDashboardActions() {
   const { dispatch } = useDashboard();
 
-  const fetchCustomerMatters = async (customerId: number) => {
+  const fetchCustomers = async (page: number = 1, limit: number = 10, search: string = '') => {
+    dispatch({ type: 'SET_LOADING_CUSTOMERS', payload: true });
+    dispatch({ type: 'SET_CUSTOMERS_ERROR', payload: null });
+
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(search && { search }),
+      });
+
+      const response = await fetch(`/api/customers?${params}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch customers');
+      }
+
+      const data: CustomersResponse = await response.json();
+      dispatch({ type: 'SET_CUSTOMERS', payload: data.customers });
+      dispatch({ type: 'SET_CUSTOMER_PAGINATION', payload: data.pagination });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      dispatch({ type: 'SET_CUSTOMERS_ERROR', payload: errorMessage });
+    } finally {
+      dispatch({ type: 'SET_LOADING_CUSTOMERS', payload: false });
+    }
+  };
+
+  const fetchCustomerMatters = async (customerId: number, page: number = 1, limit: number = 10) => {
     dispatch({ type: 'SET_LOADING_MATTERS', payload: true });
     dispatch({ type: 'SET_MATTERS_ERROR', payload: null });
 
     try {
-      const response = await fetch(`/api/customers/${customerId}/matters`);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+
+      const response = await fetch(`/api/customers/${customerId}/matters?${params}`);
       if (!response.ok) {
         throw new Error('Failed to fetch matters');
       }
-      const matters: Matter[] = await response.json();
-      dispatch({ type: 'SET_CUSTOMER_MATTERS', payload: matters });
+
+      const data: MattersResponse = await response.json();
+      dispatch({ type: 'SET_CUSTOMER_MATTERS', payload: data.matters });
+      dispatch({ type: 'SET_MATTER_PAGINATION', payload: data.pagination });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       dispatch({ type: 'SET_MATTERS_ERROR', payload: errorMessage });
@@ -28,9 +62,9 @@ export function useDashboardActions() {
   const handleCustomerSelect = (customer: any, currentSelectedCustomer: any) => {
     if (currentSelectedCustomer && currentSelectedCustomer.id === customer.id) {
       dispatch({ type: 'SELECT_CUSTOMER', payload: null });
+      dispatch({ type: 'SET_MATTER_PAGINATION', payload: null });
     } else {
       dispatch({ type: 'SELECT_CUSTOMER', payload: customer });
-      dispatch({ type: 'RESET_MATTER_PAGE' });
       fetchCustomerMatters(customer.id);
     }
   };
@@ -69,20 +103,9 @@ export function useDashboardActions() {
     dispatch({ type: 'OPEN_DELETE_MATTER_MODAL' });
   };
 
-  const setSearchTerm = (term: string) => {
-    dispatch({ type: 'SET_SEARCH_TERM', payload: term });
-    dispatch({ type: 'RESET_CUSTOMER_PAGE' }); // Reset page when searching
-  };
-
-  const setCustomerPage = (page: number) => {
-    dispatch({ type: 'SET_CUSTOMER_PAGE', payload: page });
-  };
-
-  const setMatterPage = (page: number) => {
-    dispatch({ type: 'SET_MATTER_PAGE', payload: page });
-  };
-
   return {
+    fetchCustomers,
+    fetchCustomerMatters,
     handleCustomerSelect,
     handleCustomerAdded,
     handleCustomerUpdated,
@@ -92,8 +115,5 @@ export function useDashboardActions() {
     handleMatterDeleted,
     handleEditMatter,
     handleDeleteMatter,
-    setSearchTerm,
-    setCustomerPage,
-    setMatterPage,
   };
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/generated/prisma';
+import { verifyAuthToken } from '@/server-utils/auth';
 import { logger } from '@/server-utils/logger';
 
 export async function GET(
@@ -7,22 +8,33 @@ export async function GET(
   { params }: { params: Promise<{ customer_id: string }> }
 ) {
   const prisma = new PrismaClient();
-  const token = request.cookies.get('token')?.value;
-  const { customer_id } = await params;
-  if (!token) {
-    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
 
   try {
+    const userId = await verifyAuthToken(request);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const { customer_id } = await params;
+
     if (customer_id && isNaN(Number(customer_id))) {
       return new NextResponse(JSON.stringify({ error: 'Invalid customer ID' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') ?? '1', 10);
+    const limit = parseInt(searchParams.get('limit') ?? '10', 10);
+
+    const skip = (page - 1) * limit;
+
+    const totalCount = await prisma.matter.count({
+      where: { customerId: Number(customer_id) },
+    });
 
     const matters = await prisma.matter.findMany({
       where: { customerId: Number(customer_id) },
@@ -34,8 +46,28 @@ export async function GET(
         createdAt: true,
         customerId: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip,
+      take: limit,
     });
-    return new NextResponse(JSON.stringify(matters), {
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    const response = {
+      matters,
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
+
+    return new NextResponse(JSON.stringify(response), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -55,16 +87,16 @@ export async function POST(
   { params }: { params: Promise<{ customer_id: string }> }
 ) {
   const prisma = new PrismaClient();
-  const token = request.cookies.get('token')?.value;
-  const { customer_id } = await params;
-  if (!token) {
-    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
+    const userId = await verifyAuthToken(request);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    const { customer_id } = await params;
+
     if (customer_id && isNaN(Number(customer_id))) {
       return new NextResponse(JSON.stringify({ error: 'Invalid customer ID' }), {
         status: 400,

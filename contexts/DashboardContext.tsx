@@ -1,22 +1,22 @@
 'use client';
 
 import { createContext, ReactNode, useContext, useMemo, useReducer } from 'react';
-import { Customer, Matter } from '@/types';
+import { Customer, Matter, PaginationInfo } from '@/types';
 
 export interface DashboardState {
   // Customer state
   customers: Customer[];
   selectedCustomer: Customer | null;
   searchTerm: string;
-
-  // Pagination state
-  customerCurrentPage: number;
-  matterCurrentPage: number;
+  loadingCustomers: boolean;
+  customersError: string | null;
+  customerPagination: PaginationInfo | null;
 
   // Matter state
   selectedMatter: Matter | null;
   loadingMatters: boolean;
   mattersError: string | null;
+  matterPagination: PaginationInfo | null;
 
   // Modal state
   addCustomerOpened: boolean;
@@ -35,12 +35,9 @@ export type DashboardAction =
   | { type: 'DELETE_CUSTOMER'; payload: number }
   | { type: 'SELECT_CUSTOMER'; payload: Customer | null }
   | { type: 'SET_SEARCH_TERM'; payload: string }
-
-  // Pagination actions
-  | { type: 'SET_CUSTOMER_PAGE'; payload: number }
-  | { type: 'SET_MATTER_PAGE'; payload: number }
-  | { type: 'RESET_CUSTOMER_PAGE' }
-  | { type: 'RESET_MATTER_PAGE' }
+  | { type: 'SET_LOADING_CUSTOMERS'; payload: boolean }
+  | { type: 'SET_CUSTOMERS_ERROR'; payload: string | null }
+  | { type: 'SET_CUSTOMER_PAGINATION'; payload: PaginationInfo | null }
 
   // Matter actions
   | { type: 'SET_CUSTOMER_MATTERS'; payload: Matter[] }
@@ -50,6 +47,7 @@ export type DashboardAction =
   | { type: 'SELECT_MATTER'; payload: Matter | null }
   | { type: 'SET_LOADING_MATTERS'; payload: boolean }
   | { type: 'SET_MATTERS_ERROR'; payload: string | null }
+  | { type: 'SET_MATTER_PAGINATION'; payload: PaginationInfo | null }
 
   // Modal actions
   | { type: 'OPEN_ADD_CUSTOMER_MODAL' }
@@ -70,11 +68,13 @@ export const initialState: DashboardState = {
   customers: [],
   selectedCustomer: null,
   searchTerm: '',
-  customerCurrentPage: 1,
-  matterCurrentPage: 1,
+  loadingCustomers: false,
+  customersError: null,
+  customerPagination: null,
   selectedMatter: null,
   loadingMatters: false,
   mattersError: null,
+  matterPagination: null,
   addCustomerOpened: false,
   editCustomerOpened: false,
   deleteCustomerOpened: false,
@@ -128,18 +128,14 @@ export function dashboardReducer(state: DashboardState, action: DashboardAction)
     case 'SET_SEARCH_TERM':
       return { ...state, searchTerm: action.payload };
 
-    // Pagination actions
-    case 'SET_CUSTOMER_PAGE':
-      return { ...state, customerCurrentPage: action.payload };
+    case 'SET_LOADING_CUSTOMERS':
+      return { ...state, loadingCustomers: action.payload };
 
-    case 'SET_MATTER_PAGE':
-      return { ...state, matterCurrentPage: action.payload };
+    case 'SET_CUSTOMERS_ERROR':
+      return { ...state, customersError: action.payload };
 
-    case 'RESET_CUSTOMER_PAGE':
-      return { ...state, customerCurrentPage: 1 };
-
-    case 'RESET_MATTER_PAGE':
-      return { ...state, matterCurrentPage: 1 };
+    case 'SET_CUSTOMER_PAGINATION':
+      return { ...state, customerPagination: action.payload };
 
     // Matter actions
     case 'SET_CUSTOMER_MATTERS':
@@ -196,6 +192,9 @@ export function dashboardReducer(state: DashboardState, action: DashboardAction)
 
     case 'SET_MATTERS_ERROR':
       return { ...state, mattersError: action.payload };
+
+    case 'SET_MATTER_PAGINATION':
+      return { ...state, matterPagination: action.payload };
 
     // Modal actions
     case 'OPEN_ADD_CUSTOMER_MODAL':

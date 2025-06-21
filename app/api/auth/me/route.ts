@@ -1,30 +1,21 @@
-import { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/generated/prisma';
+import { verifyAuthToken } from '@/server-utils/auth';
 import { logger } from '@/server-utils/logger';
 
 export async function GET(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
   const prisma = new PrismaClient();
-  if (!token) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
-    const user = jwt.verify(token, process.env.JWT_SECRET!);
-
-    if (!user || typeof user !== 'object' || !('userId' in user)) {
-      return new Response(JSON.stringify({ error: 'Invalid token' }), {
+    const userId = await verifyAuthToken(request);
+    if (!userId) {
+      return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
     const userInfo = await prisma.user.findUnique({
-      where: { id: user.userId },
+      where: { id: userId },
       select: {
         id: true,
         firstName: true,
