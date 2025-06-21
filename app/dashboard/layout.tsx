@@ -1,25 +1,30 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+'use client';
 
-export default async function DashboardLayout({
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+
+export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('token')?.value;
+  const { state } = useAuth();
+  const router = useRouter();
 
-  // the path here is hardcoded since we are calling from server side
-  // there are ways around this but for simplicity this works
-  const userInfo = await fetch(`${process.env.url}/api/auth/me`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Cookie: `token=${token ?? ''}`,
-    },
-  });
-  if (!userInfo.ok) {
-    redirect('/');
+  useEffect(() => {
+    if (!state.isLoading && !state.isAuthenticated) {
+      router.push('/');
+    }
+  }, [state.isAuthenticated, state.isLoading, router]);
+
+  if (state.isLoading) {
+    return <div>Loading...</div>;
   }
+
+  if (!state.isAuthenticated) {
+    return null;
+  }
+
   return <>{children}</>;
 }

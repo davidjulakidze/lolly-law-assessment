@@ -5,6 +5,7 @@ import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/c
 import { Notifications } from '@mantine/notifications';
 import { NavBar } from '@/components/NavBar/NavBar';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { getServerSideAuth } from '@/lib/auth';
 import { theme } from '../theme';
 
 export const metadata = {
@@ -13,6 +14,8 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: any }>) {
+  const { user, authenticated } = await getServerSideAuth();
+
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
@@ -26,7 +29,7 @@ export default async function RootLayout({ children }: Readonly<{ children: any 
       <body>
         <MantineProvider theme={theme}>
           <Notifications />
-          <AuthProvider>
+          <AuthProvider initialUser={user} initialAuthenticated={authenticated}>
             <NavBar title="LollyLaw">{children}</NavBar>
           </AuthProvider>
         </MantineProvider>

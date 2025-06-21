@@ -1,7 +1,15 @@
 'use client';
 
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+} from 'react';
 import { User } from '@/types';
-import { createContext, ReactNode, useContext, useEffect, useMemo, useReducer } from 'react';
 
 export interface AuthState {
   isAuthenticated: boolean;
@@ -17,7 +25,6 @@ export type AuthAction =
   | { type: 'AUTH_LOGOUT' }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'CLEAR_ERROR' };
-
 
 export const initialAuthState: AuthState = {
   isAuthenticated: false,
@@ -87,10 +94,22 @@ export const AuthContext = createContext<{
   checkAuth: () => Promise<void>;
 } | null>(null);
 
-export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
-  const [state, dispatch] = useReducer(authReducer, initialAuthState);
-
-  const checkAuth = async () => {
+// Provider component
+export function AuthProvider({
+  children,
+  initialUser = null,
+  initialAuthenticated = false,
+}: Readonly<{
+  children: ReactNode;
+  initialUser?: User | null;
+  initialAuthenticated?: boolean;
+}>) {
+  const [state, dispatch] = useReducer(authReducer, {
+    ...initialAuthState,
+    isAuthenticated: initialAuthenticated,
+    user: initialUser,
+  });
+  const checkAuth = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const response = await fetch('/api/auth/me', {
@@ -112,7 +131,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  };
+  }, []);
 
   const login = async (email: string, password: string, rememberMe = false): Promise<boolean> => {
     dispatch({ type: 'AUTH_START' });
@@ -130,7 +149,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
         dispatch({ type: 'AUTH_SUCCESS', payload: data.user });
         return true;
       }
-      
+
       const errorData = await response.json();
       dispatch({ type: 'AUTH_FAILURE', payload: errorData.error ?? 'Login failed' });
       return false;
@@ -153,10 +172,12 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
       dispatch({ type: 'AUTH_LOGOUT' });
     }
   };
-
+  // Only check auth if we don't have initial authenticated state
   useEffect(() => {
-    checkAuth();
-  }, []);
+    if (!initialAuthenticated && !initialUser) {
+      checkAuth();
+    }
+  }, [initialAuthenticated, initialUser, checkAuth]);
 
   const contextValue = useMemo(
     () => ({
