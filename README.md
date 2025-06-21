@@ -13,12 +13,12 @@ This guide explains how to run the LollyLaw Assessment application using Docker.
 
 1. **Clone the repository:**
    ```bash
-   git clone
+   git clone https://github.com/davidjulakidze/LollyLawAssessment.git
    ```
 
 2. **Navigate to the project directory:**
    ```bash
-    cd lollylaw-assessment
+    cd LollyLawAssessment
     ```
 
 **For Unix/Linux/macOS:**
@@ -41,13 +41,13 @@ docker-compose down
 
 1. **Clone the repository:**
    ```bash
-   git clone
+   git clone https://github.com/davidjulakidze/LollyLawAssessment.git
    ```
 
 
 2. **Navigate to the project directory:**
    ```bash
-    cd lollylaw-assessment
+    cd LollyLawAssessment
     ```
 
 3. **Create environment file:**
@@ -83,12 +83,12 @@ docker-compose down
 
 1. **Clone the repository:**
    ```bash
-   git clone
+   git clone https://github.com/davidjulakidze/LollyLawAssessment.git
    ```
 
 2. **Navigate to the project directory:**
    ```bash
-   cd lollylaw-assessment
+   cd LollyLawAssessment
    ```
 
 3. **Install dependencies:**
@@ -608,3 +608,4 @@ Valid status values for matters:
 - **Logging**: Implement structured logging for better observability.
 - **Rate Limiting**: Add rate limiting to prevent abuse of API endpoints.
 - **Sorting**: Implement sorting options for customers and matters.
+- **Delete Enhancements**: Currently you cannot delete a customer if they have matters, this could be improved by allowing deletion of customers with a confirmation prompt or cascade delete option.
