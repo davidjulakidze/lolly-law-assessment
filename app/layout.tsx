@@ -23,7 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: any }>) {
       </head>
       <body>
         <MantineProvider theme={theme}>
-          <NavBar title='LollyLaw'>{children}</NavBar>
+          <NavBar title="LollyLaw">{children}</NavBar>
         </MantineProvider>
       </body>
     </html>

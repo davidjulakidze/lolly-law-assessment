@@ -1,23 +1,23 @@
+'use client';
 
-"use client";
 import { useState } from 'react';
+import { IconLock, IconMail, IconUser, IconUserPlus } from '@tabler/icons-react';
 import {
-  Paper,
-  TextInput,
-  PasswordInput,
-  Button,
-  Title,
-  Text,
-  Container,
-  Tabs,
-  Stack,
-  Group,
   Anchor,
-  Divider,
+  Button,
   Checkbox,
+  Container,
+  Divider,
+  Group,
+  Paper,
+  PasswordInput,
+  Stack,
+  Tabs,
+  Text,
+  TextInput,
+  Title,
 } from '@mantine/core';
 import { isEmail, useForm } from '@mantine/form';
-import { IconUser, IconMail, IconLock, IconUserPlus } from '@tabler/icons-react';
 import classes from './Login.module.css';
 
 interface LoginFormValues {
@@ -45,7 +45,7 @@ export function Login() {
       rememberMe: false,
     },
     validate: {
-      email: (value) =>  isEmail(value) ? null : 'Invalid email',
+      email: (value) => (isEmail(value) ? null : 'Invalid email'),
       password: (value) => (value.length < 6 ? 'Password must be at least 6 characters' : null),
     },
   });
@@ -62,7 +62,7 @@ export function Login() {
     validate: {
       firstName: (value) => (value.length < 2 ? 'First name must be at least 2 characters' : null),
       lastName: (value) => (value.length < 2 ? 'Last name must be at least 2 characters' : null),
-      email: (value) => isEmail(value) ? null : 'Invalid email',
+      email: (value) => (isEmail(value) ? null : 'Invalid email'),
       password: (value) => (value.length < 6 ? 'Password must be at least 6 characters' : null),
       confirmPassword: (value, values) =>
         value !== values.password ? 'Passwords do not match' : null,
@@ -93,7 +93,11 @@ export function Login() {
             <Tabs.Tab value="login" leftSection={<IconUser size={16} />} className={classes.tab}>
               Sign In
             </Tabs.Tab>
-            <Tabs.Tab value="signup" leftSection={<IconUserPlus size={16} />} className={classes.tab}>
+            <Tabs.Tab
+              value="signup"
+              leftSection={<IconUserPlus size={16} />}
+              className={classes.tab}
+            >
               Sign Up
             </Tabs.Tab>
           </Tabs.List>
@@ -200,7 +204,10 @@ export function Login() {
         <Divider my="xl" />
 
         <Text c="dimmed" size="sm" ta="center">
-          Having trouble? <Anchor href="#" size="sm">Contact support</Anchor>
+          Having trouble?{' '}
+          <Anchor href="#" size="sm">
+            Contact support
+          </Anchor>
         </Text>
       </Paper>
     </Container>

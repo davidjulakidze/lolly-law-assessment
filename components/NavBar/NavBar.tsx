@@ -13,8 +13,8 @@ import {
   useMantineColorScheme,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import classes from './NavBar.module.css';
 import { Navigation } from '@/types';
+import classes from './NavBar.module.css';
 
 export interface NavBarProps {
   children?: React.ReactNode;
