@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const tokenExpiration = rememberMe ? '7d' : '1h';
+    const tokenExpiration = rememberMe ? '4h' : '1h';
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
       expiresIn: tokenExpiration,
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       }
     );
     const secure = process.env.NODE_ENV === 'production' ? 'Secure' : '';
-    const maxAge = rememberMe ? 604800 : 3600; // 7 days or 1 hour
+    const maxAge = rememberMe ? 14400 : 3600; // 4 hours or 1 hour
     response.headers.set(
       'Set-Cookie',
       `token=${token}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Lax; ${secure}`

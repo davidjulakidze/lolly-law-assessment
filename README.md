@@ -38,8 +38,7 @@ docker-compose down
 ```
 
 ** For Unix/Linux/macOS:**
-```
-bash
+```bash
 docker compose down
 ```
 
