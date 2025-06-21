@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
         lastName: true,
         email: true,
         phone: true,
+        createdAt: true,
       },
     });
 

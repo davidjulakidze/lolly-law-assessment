@@ -1,7 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { IconAlertCircle, IconMail, IconPhone, IconPlus, IconSearch } from '@tabler/icons-react';
+import {
+  IconAlertCircle,
+  IconEdit,
+  IconMail,
+  IconPhone,
+  IconPlus,
+  IconSearch,
+  IconTrash,
+} from '@tabler/icons-react';
 import {
   Alert,
   Avatar,
@@ -19,19 +27,13 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
-import { Customer } from '@/generated/prisma';
 import { AddCustomer } from '@/components/AddCustomer/AddCustomer';
-
-interface Matter {
-  id: number;
-  title: string;
-  description: string;
-  status: string;
-}
-
-interface CustomerWithMatters extends Customer {
-  matters?: Matter[];
-}
+import { AddMatter } from '@/components/AddMatter/AddMatter';
+import { DeleteCustomer } from '@/components/DeleteCustomer/DeleteCustomer';
+import { DeleteMatter } from '@/components/DeleteMatter/DeleteMatter';
+import { EditCustomer } from '@/components/EditCustomer/EditCustomer';
+import { EditMatter } from '@/components/EditMatter/EditMatter';
+import { Customer, Matter } from '@/types';
 
 export interface DashboardProps {
   customers: Customer[];
@@ -39,11 +41,17 @@ export interface DashboardProps {
 
 export function Dashboard(props: Readonly<DashboardProps>) {
   const { customers } = props;
-  const [selectedCustomer, setSelectedCustomer] = useState<CustomerWithMatters | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingMatters, setLoadingMatters] = useState(false);
   const [mattersError, setMattersError] = useState<string | null>(null);
   const [addCustomerOpened, setAddCustomerOpened] = useState(false);
+  const [editCustomerOpened, setEditCustomerOpened] = useState(false);
+  const [deleteCustomerOpened, setDeleteCustomerOpened] = useState(false);
+  const [addMatterOpened, setAddMatterOpened] = useState(false);
+  const [editMatterOpened, setEditMatterOpened] = useState(false);
+  const [deleteMatterOpened, setDeleteMatterOpened] = useState(false);
+  const [selectedMatter, setSelectedMatter] = useState<Matter | null>(null);
   const [customerList, setCustomerList] = useState<Customer[]>(customers);
 
   const fetchCustomerMatters = async (customerId: number) => {
@@ -71,13 +79,83 @@ export function Dashboard(props: Readonly<DashboardProps>) {
   };
 
   const handleCustomerSelect = (customer: Customer) => {
-    const customerWithMatters: CustomerWithMatters = { ...customer };
+    const customerWithMatters: Customer = { ...customer };
     setSelectedCustomer(customerWithMatters);
     fetchCustomerMatters(customer.id);
   };
 
   const handleCustomerAdded = (newCustomer: Customer) => {
-    setCustomerList(prev => [...prev, newCustomer]);
+    setCustomerList((prev) => [...prev, newCustomer]);
+  };
+
+  const handleCustomerUpdated = (updatedCustomer: Customer) => {
+    setCustomerList((prev) =>
+      prev.map((customer) => (customer.id === updatedCustomer.id ? updatedCustomer : customer))
+    );
+    // Update selected customer if it's the one being updated
+    if (selectedCustomer?.id === updatedCustomer.id) {
+      setSelectedCustomer((prev) => (prev ? { ...prev, ...updatedCustomer } : null));
+    }
+  };
+
+  const handleCustomerDeleted = (deletedCustomerId: number) => {
+    setCustomerList((prev) => prev.filter((customer) => customer.id !== deletedCustomerId));
+    // Clear selected customer if it's the one being deleted
+    if (selectedCustomer?.id === deletedCustomerId) {
+      setSelectedCustomer(null);
+    }
+  };
+
+  const handleMatterAdded = (newMatter: Matter) => {
+    if (selectedCustomer) {
+      setSelectedCustomer((prev) =>
+        prev
+          ? {
+              ...prev,
+              matters: [...(prev.matters || []), newMatter],
+            }
+          : null
+      );
+    }
+  };
+
+  const handleMatterUpdated = (updatedMatter: Matter) => {
+    if (selectedCustomer) {
+      setSelectedCustomer((prev) =>
+        prev
+          ? {
+              ...prev,
+              matters:
+                prev.matters?.map((matter) =>
+                  matter.id === updatedMatter.id ? updatedMatter : matter
+                ) || [],
+            }
+          : null
+      );
+    }
+  };
+
+  const handleMatterDeleted = (deletedMatterId: number) => {
+    if (selectedCustomer) {
+      setSelectedCustomer((prev) =>
+        prev
+          ? {
+              ...prev,
+              matters: prev.matters?.filter((matter) => matter.id !== deletedMatterId) || [],
+            }
+          : null
+      );
+    }
+  };
+
+  const handleEditMatter = (matter: Matter) => {
+    setSelectedMatter(matter);
+    setEditMatterOpened(true);
+  };
+
+  const handleDeleteMatter = (matter: Matter) => {
+    setSelectedMatter(matter);
+    setDeleteMatterOpened(true);
   };
 
   const filteredCustomers = customerList.filter(
@@ -123,8 +201,8 @@ export function Dashboard(props: Readonly<DashboardProps>) {
           <Card shadow="sm" padding="lg" radius="md" withBorder h="calc(100vh - 200px)">
             <Group justify="space-between" mb="md">
               <Title order={3}>Customers</Title>
-              <Button 
-                leftSection={<IconPlus size={16} />} 
+              <Button
+                leftSection={<IconPlus size={16} />}
                 size="sm"
                 onClick={() => setAddCustomerOpened(true)}
               >
@@ -201,10 +279,15 @@ export function Dashboard(props: Readonly<DashboardProps>) {
                     {selectedCustomer.firstName} {selectedCustomer.lastName}
                   </Title>
                   <Group gap="xs">
-                    <Button variant="light" size="sm">
+                    <Button variant="light" size="sm" onClick={() => setEditCustomerOpened(true)}>
                       Edit
                     </Button>
-                    <Button variant="light" color="red" size="sm">
+                    <Button
+                      variant="light"
+                      color="red"
+                      size="sm"
+                      onClick={() => setDeleteCustomerOpened(true)}
+                    >
                       Delete
                     </Button>
                   </Group>
@@ -234,7 +317,11 @@ export function Dashboard(props: Readonly<DashboardProps>) {
               <Card shadow="sm" padding="lg" radius="md" withBorder>
                 <Group justify="space-between" mb="md">
                   <Title order={4}>Matters</Title>
-                  <Button leftSection={<IconPlus size={16} />} size="sm">
+                  <Button
+                    leftSection={<IconPlus size={16} />}
+                    size="sm"
+                    onClick={() => setAddMatterOpened(true)}
+                  >
                     New Matter
                   </Button>
                 </Group>
@@ -257,9 +344,28 @@ export function Dashboard(props: Readonly<DashboardProps>) {
                           <Text fw={500} size="sm">
                             {matter.title}
                           </Text>
-                          <Badge color={getStatusColor(matter.status)} variant="light" size="sm">
-                            {matter.status.replace('-', ' ')}
-                          </Badge>
+                          <Group gap="xs">
+                            <Badge color={getStatusColor(matter.status)} variant="light" size="sm">
+                              {matter.status.replace('-', ' ')}
+                            </Badge>
+                            <Button
+                              size="xs"
+                              variant="light"
+                              leftSection={<IconEdit size={14} />}
+                              onClick={() => handleEditMatter(matter)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="xs"
+                              variant="light"
+                              color="red"
+                              leftSection={<IconTrash size={14} />}
+                              onClick={() => handleDeleteMatter(matter)}
+                            >
+                              Delete
+                            </Button>
+                          </Group>
                         </Group>
 
                         {matter.description && (
@@ -274,7 +380,11 @@ export function Dashboard(props: Readonly<DashboardProps>) {
                   <Center h={200}>
                     <Stack align="center" gap="md">
                       <Text c="dimmed">No matters found for this customer</Text>
-                      <Button leftSection={<IconPlus size={16} />} variant="light">
+                      <Button
+                        leftSection={<IconPlus size={16} />}
+                        variant="light"
+                        onClick={() => setAddMatterOpened(true)}
+                      >
                         Create First Matter
                       </Button>
                     </Stack>
@@ -298,11 +408,46 @@ export function Dashboard(props: Readonly<DashboardProps>) {
           )}
         </Grid.Col>
       </Grid>
-      
+
       <AddCustomer
         opened={addCustomerOpened}
         onClose={() => setAddCustomerOpened(false)}
         onCustomerAdded={handleCustomerAdded}
+      />
+
+      <EditCustomer
+        opened={editCustomerOpened}
+        onClose={() => setEditCustomerOpened(false)}
+        onCustomerUpdated={handleCustomerUpdated}
+        customer={selectedCustomer}
+      />
+
+      <DeleteCustomer
+        opened={deleteCustomerOpened}
+        onClose={() => setDeleteCustomerOpened(false)}
+        onCustomerDeleted={handleCustomerDeleted}
+        customer={selectedCustomer}
+      />
+
+      <AddMatter
+        opened={addMatterOpened}
+        onClose={() => setAddMatterOpened(false)}
+        onMatterAdded={handleMatterAdded}
+        customerId={selectedCustomer?.id ?? null}
+      />
+
+      <EditMatter
+        opened={editMatterOpened}
+        onClose={() => setEditMatterOpened(false)}
+        onMatterUpdated={handleMatterUpdated}
+        matter={selectedMatter}
+      />
+
+      <DeleteMatter
+        opened={deleteMatterOpened}
+        onClose={() => setDeleteMatterOpened(false)}
+        onMatterDeleted={handleMatterDeleted}
+        matter={selectedMatter}
       />
     </Container>
   );

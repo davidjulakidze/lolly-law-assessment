@@ -32,6 +32,7 @@ export async function GET(
         description: true,
         status: true,
         createdAt: true,
+        customerId: true,
       },
     });
     return new NextResponse(JSON.stringify(matters), {
@@ -90,6 +91,7 @@ export async function POST(
         title: true,
         description: true,
         status: true,
+        customerId: true,
       },
     });
 

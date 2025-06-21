@@ -33,6 +33,7 @@ export async function GET(
         title: true,
         description: true,
         status: true,
+        customerId: true,
       },
     });
 
@@ -96,6 +97,7 @@ export async function PUT(
         title: true,
         description: true,
         status: true,
+        customerId: true,
       },
     });
 

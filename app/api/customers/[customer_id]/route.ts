@@ -31,6 +31,7 @@ export async function GET(
         lastName: true,
         email: true,
         phone: true,
+        createdAt: true,
       },
     });
 
@@ -90,6 +91,14 @@ export async function PUT(
     const updatedCustomer = await prisma.customer.update({
       where: { id: Number(customer_id) },
       data: { firstName, lastName, email, phone },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        createdAt: true,
+      },
     });
 
     return new Response(JSON.stringify(updatedCustomer), {

@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IconAlertCircle, IconCheck } from '@tabler/icons-react';
 import { Alert, Button, Group, Loader, Modal, Stack, TextInput } from '@mantine/core';
-import { isEmail, useForm } from '@mantine/form';
+import { useForm } from '@mantine/form';
+import { Customer } from '@/types';
 
-interface AddCustomerProps {
+interface EditCustomerProps {
   opened: boolean;
   onClose: () => void;
-  onCustomerAdded: (customer: any) => void;
+  onCustomerUpdated: (customer: Customer) => void;
+  customer: Customer | null;
 }
 
 interface CustomerFormValues {
@@ -18,7 +20,12 @@ interface CustomerFormValues {
   phone: string;
 }
 
-export function AddCustomer({ opened, onClose, onCustomerAdded }: Readonly<AddCustomerProps>) {
+export function EditCustomer({
+  opened,
+  onClose,
+  onCustomerUpdated,
+  customer,
+}: Readonly<EditCustomerProps>) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -35,25 +42,41 @@ export function AddCustomer({ opened, onClose, onCustomerAdded }: Readonly<AddCu
         value.trim().length < 2 ? 'First name must be at least 2 characters' : null,
       lastName: (value) =>
         value.trim().length < 2 ? 'Last name must be at least 2 characters' : null,
-      email: (value) => (isEmail(value) ? null : 'Invalid email address'),
+      email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : 'Invalid email address'),
       phone: (value) =>
         value.trim().length < 10 ? 'Phone number must be at least 10 characters' : null,
     },
   });
 
+  // Update form values when customer changes
+  useEffect(() => {
+    if (customer && opened) {
+      form.setValues({
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        email: customer.email,
+        phone: customer.phone,
+      });
+    }
+  }, [customer, opened]);
   const handleSubmit = async (values: CustomerFormValues) => {
+    if (!customer) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      const response = await fetch('/api/customers', {
-        method: 'POST',
+      const response = await fetch(`/api/customers/${customer.id}`, {
+        method: 'PUT',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          id: customer.id,
           firstName: values.firstName.trim(),
           lastName: values.lastName.trim(),
           email: values.email.trim(),
@@ -63,17 +86,14 @@ export function AddCustomer({ opened, onClose, onCustomerAdded }: Readonly<AddCu
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error ?? 'Failed to create customer');
+        throw new Error(errorData.error ?? 'Failed to update customer');
       }
 
-      const newCustomer = await response.json();
+      const updatedCustomer = await response.json();
       setSuccess(true);
 
-      // Reset form
-      form.reset();
-
       // Call the callback to update the parent component
-      onCustomerAdded(newCustomer);
+      onCustomerUpdated(updatedCustomer);
 
       // Close modal after a brief delay to show success message
       setTimeout(() => {
@@ -89,7 +109,6 @@ export function AddCustomer({ opened, onClose, onCustomerAdded }: Readonly<AddCu
 
   const handleClose = () => {
     if (!loading) {
-      form.reset();
       setError(null);
       setSuccess(false);
       onClose();
@@ -97,10 +116,16 @@ export function AddCustomer({ opened, onClose, onCustomerAdded }: Readonly<AddCu
   };
 
   return (
-    <Modal opened={opened} onClose={handleClose} title="Add New Customer" size="md" centered>
+    <Modal
+      opened={opened}
+      onClose={handleClose}
+      title={`Edit Customer: ${customer?.firstName} ${customer?.lastName}`}
+      size="md"
+      centered
+    >
       {success ? (
         <Alert icon={<IconCheck size={16} />} title="Success!" color="green" mb="md">
-          Customer has been added successfully.
+          Customer has been updated successfully.
         </Alert>
       ) : (
         <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -154,7 +179,7 @@ export function AddCustomer({ opened, onClose, onCustomerAdded }: Readonly<AddCu
                 loading={loading}
                 leftSection={loading ? <Loader size={16} /> : undefined}
               >
-                Add Customer
+                Update Customer
               </Button>
             </Group>
           </Stack>
