@@ -2,13 +2,16 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { IconMoon, IconSun } from '@tabler/icons-react';
+import { IconChevronDown, IconLogout, IconMoon, IconSun, IconUser } from '@tabler/icons-react';
 import {
   ActionIcon,
   AppShell,
   AppShellHeader,
+  Avatar,
   Burger,
   Group,
+  Menu,
+  rem,
   Text,
   UnstyledButton,
   useMantineColorScheme,
@@ -87,15 +90,43 @@ export const NavBar = (props: NavBarProps) => {
                 </UnstyledButton>
               ))}
               {state.isAuthenticated && (
-                <UnstyledButton
-                  component="button"
-                  onClick={handleLogout}
-                  px="lg"
-                  py="sm"
-                  className={classes.navButton}
-                >
-                  Logout
-                </UnstyledButton>
+                <Menu shadow="md" width={200} position="bottom-end" withArrow>
+                  <Menu.Target>
+                    <UnstyledButton
+                      px="lg"
+                      py="sm"
+                      mr="xl"
+                      className={classes.navButton}
+                      style={{ display: 'flex', alignItems: 'center', gap: rem(8) }}
+                    >
+                      <Avatar size={24} radius="xl">
+                        <IconUser size={16} />
+                      </Avatar>
+                      <Text size="sm">{state.user?.firstName ?? 'User'}</Text>
+                      <IconChevronDown size={16} />
+                    </UnstyledButton>
+                  </Menu.Target>
+
+                  <Menu.Dropdown>
+                    <Menu.Label>Account</Menu.Label>
+                    <Menu.Item>
+                      <Text size="sm" fw={500}>
+                        {state.user?.firstName ?? 'User'} {state.user?.lastName ?? ''}
+                      </Text>
+                      <Text size="xs" c="dimmed">
+                        {state.user?.email ?? ''}
+                      </Text>
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item
+                      leftSection={<IconLogout style={{ width: rem(14), height: rem(14) }} />}
+                      onClick={handleLogout}
+                      color="red"
+                    >
+                      Logout
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               )}
             </Group>
           </Group>
@@ -116,16 +147,42 @@ export const NavBar = (props: NavBarProps) => {
           </UnstyledButton>
         ))}
         {state.isAuthenticated && (
-          <UnstyledButton
-            component="button"
-            onClick={handleLogout}
-            px="lg"
-            py="md"
-            w="100%"
-            className={classes.mobileNavButton}
-          >
-            Logout
-          </UnstyledButton>
+          <>
+            <UnstyledButton
+              px="lg"
+              py="md"
+              w="100%"
+              className={classes.mobileNavButton}
+              style={{ cursor: 'default' }}
+            >
+              <Group>
+                <Avatar size={32} radius="xl">
+                  <IconUser size={18} />
+                </Avatar>
+                <div>
+                  <Text size="sm" fw={500}>
+                    {state.user?.firstName ?? 'User'} {state.user?.lastName ?? ''}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {state.user?.email ?? ''}
+                  </Text>
+                </div>
+              </Group>
+            </UnstyledButton>
+            <UnstyledButton
+              onClick={handleLogout}
+              px="lg"
+              py="md"
+              w="100%"
+              className={classes.mobileNavButton}
+              style={{ color: 'var(--mantine-color-red-6)' }}
+            >
+              <Group>
+                <IconLogout size={18} />
+                <Text>Logout</Text>
+              </Group>
+            </UnstyledButton>
+          </>
         )}
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
