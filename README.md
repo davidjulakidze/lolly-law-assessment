@@ -11,6 +11,16 @@ This guide explains how to run the LollyLaw Assessment application using Docker.
 
 ### Option 1: Automated Setup (Recommended)
 
+1. **Clone the repository:**
+   ```bash
+   git clone
+   ```
+
+2. **Navigate to the project directory:**
+   ```bash
+    cd lollylaw-assessment
+    ```
+
 **For Unix/Linux/macOS:**
 ```bash
 chmod +x docker-setup.sh
@@ -29,24 +39,30 @@ docker-setup.bat
    git clone
    ```
 
-2. **Create environment file:**
+
+2. **Navigate to the project directory:**
+   ```bash
+    cd lollylaw-assessment
+    ```
+
+3. **Create environment file:**
    ```bash
    cp .env.example .env
    ```
    
-3. **Edit the .env file with your configuration:**
+4. **Edit the .env file with your configuration:**
    ```env
    DATABASE_URL="postgresql://postgres:password@db:5432/lollylaw"
    JWT_SECRET="your-super-secret-jwt-key"
    url="http://localhost:3000"
    ```
 
-4. **Build and start the services:**
+5. **Build and start the services:**
    ```bash
    docker-compose up --build -d
    ```
 
-5. **Run database migrations:**
+6. **Run database migrations:**
    ```bash
    docker-compose exec app npx prisma migrate deploy
    docker-compose exec app npx prisma generate
