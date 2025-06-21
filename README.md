@@ -47,6 +47,43 @@ docker-setup.bat
    docker-compose exec app npx prisma generate
    ```
 
+### Option 3: Manual Development Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone
+   ```
+
+2. **Navigate to the project directory:**
+   ```bash
+   cd lollylaw-assessment
+   ```
+
+3. **Install dependencies:**
+   ```bash
+    yarn install
+    ```
+4. **Start PostgreSQL database:**
+   ```bash
+   docker-compose up -d db
+   ```
+
+5. **Create environment file:**
+    ```bash
+    cp .env.example .env
+    ```
+
+6. **Prisma setup:**
+    ```bash
+    npx prisma migrate deploy
+    npx prisma generate
+    ```
+
+7. **Start the development server:**
+    ```bash
+    yarn dev
+    ```
+
 ## Services
 
 The Docker setup includes:
@@ -524,3 +561,11 @@ Valid status values for matters:
 - `completed`
 - `closed`
 
+
+## Things I'd improve
+
+- **Error Handling**: Implement more robust error handling and logging.
+- **Testing**: Add unit and integration tests for all endpoints.
+- **Logging**: Implement structured logging for better observability.
+- **Rate Limiting**: Add rate limiting to prevent abuse of API endpoints.
+- **Sorting**: Implement sorting options for customers and matters.
