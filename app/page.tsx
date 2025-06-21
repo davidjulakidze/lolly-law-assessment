@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getServerSideAuth } from '@/lib/auth';
+import { getServerSideAuth } from '@/server-utils/auth';
 import { Login } from '../components/Login/Login';
 
 export default async function LoginPage() {

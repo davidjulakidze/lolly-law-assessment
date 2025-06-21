@@ -5,7 +5,7 @@ import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/c
 import { Notifications } from '@mantine/notifications';
 import { NavBar } from '@/components/NavBar/NavBar';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { getServerSideAuth } from '@/lib/auth';
+import { getServerSideAuth } from '@/server-utils/auth';
 import { theme } from '../theme';
 
 export const metadata = {
