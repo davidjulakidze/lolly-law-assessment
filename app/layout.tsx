@@ -1,7 +1,9 @@
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 
 import React from 'react';
 import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { NavBar } from '@/components/NavBar/NavBar';
 import { theme } from '../theme';
 
@@ -23,6 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: any }>) {
       </head>
       <body>
         <MantineProvider theme={theme}>
+          <Notifications />
           <NavBar title="LollyLaw">{children}</NavBar>
         </MantineProvider>
       </body>

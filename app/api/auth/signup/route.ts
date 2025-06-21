@@ -20,6 +20,18 @@ export async function POST(request: NextRequest) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
+    if (!firstName || !lastName || !email || !password) {
+      return new NextResponse(JSON.stringify({ error: 'All fields are required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    if (password.length < 6) {
+      return new NextResponse(JSON.stringify({ error: 'Password must be at least 6 characters' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     const hashedPassword = bcrypt.hashSync(password, 10);
     const newUser = await prisma.user.create({
       data: {
@@ -36,10 +48,16 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return new NextResponse(JSON.stringify(newUser), {
-      status: 201,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new NextResponse(
+      JSON.stringify({
+        message: 'User created successfully',
+        user: newUser,
+      }),
+      {
+        status: 201,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   } catch (error) {
     logger.error('Error creating user:', error);
     return new NextResponse(JSON.stringify({ error: 'Internal server error' }), {

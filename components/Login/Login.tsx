@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { IconLock, IconMail, IconUser, IconUserPlus } from '@tabler/icons-react';
 import {
   Anchor,
@@ -18,6 +19,7 @@ import {
   Title,
 } from '@mantine/core';
 import { isEmail, useForm } from '@mantine/form';
+import { notifications } from '@mantine/notifications';
 import classes from './Login.module.css';
 
 interface LoginFormValues {
@@ -37,7 +39,7 @@ interface SignUpFormValues {
 
 export function Login() {
   const [activeTab, setActiveTab] = useState<string | null>('login');
-
+  const router = useRouter();
   const loginForm = useForm<LoginFormValues>({
     initialValues: {
       email: '',
@@ -70,12 +72,58 @@ export function Login() {
     },
   });
 
-  const handleLoginSubmit = (_values: LoginFormValues) => {
-    // Handle login logic here
+  const handleLoginSubmit = async (values: LoginFormValues) => {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      notifications.show({
+        title: 'Login Failed',
+        message: errorData.error ?? 'An error occurred during login',
+        color: 'red',
+      });
+    } else {
+      const data = await response.json();
+      notifications.show({
+        title: 'Login Successful',
+        message: `Welcome back, ${data.user.firstName}!`,
+        color: 'green',
+      });
+    }
+    loginForm.reset();
+    router.push('/dashboard');
   };
 
-  const handleSignUpSubmit = (_values: SignUpFormValues) => {
-    // Handle sign up logic here
+  const handleSignUpSubmit = async (values: SignUpFormValues) => {
+    const response = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      notifications.show({
+        title: 'Sign Up Failed',
+        message: errorData.error ?? 'An error occurred during sign up',
+        color: 'red',
+      });
+    } else {
+      const data = await response.json();
+      notifications.show({
+        title: 'Sign Up Successful',
+        message: `Welcome, ${data.user.firstName}!`,
+        color: 'green',
+      });
+    }
+    signUpForm.reset();
+    setActiveTab('login');
   };
 
   return (
