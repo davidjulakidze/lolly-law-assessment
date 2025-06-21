@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { IconMoon, IconSun } from '@tabler/icons-react';
 import {
   ActionIcon,
@@ -26,12 +28,43 @@ export const NavBar = (props: NavBarProps) => {
   const { children, title, navigations } = props;
   const [opened, { toggle }] = useDisclosure();
   const { colorScheme, setColorScheme } = useMantineColorScheme();
+  const [authenticated, setAuthenticated] = useState(false);
   const toggleColorScheme = () => {
     setColorScheme(colorScheme === 'light' ? 'dark' : 'light');
   };
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const response = await fetch(`/api/auth/me`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        setAuthenticated(true);
+      } else {
+        setAuthenticated(false);
+      }
+    };
+    checkAuthentication();
+  }, []);
 
   const getColorSchemeIcon = () => {
     return colorScheme === 'light' ? <IconSun size={18} /> : <IconMoon size={18} />;
+  };
+  const logout = async () => {
+    const response = await fetch(`/api/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.ok) {
+      setAuthenticated(false);
+      router.push('/');
+    }
   };
   return (
     <AppShell
@@ -76,6 +109,17 @@ export const NavBar = (props: NavBarProps) => {
                   {nav.label}
                 </UnstyledButton>
               ))}
+              {authenticated && (
+                <UnstyledButton
+                  component="button"
+                  onClick={logout}
+                  px="lg"
+                  py="sm"
+                  className={classes.navButton}
+                >
+                  Logout
+                </UnstyledButton>
+              )}
             </Group>
           </Group>
         </Group>
@@ -94,6 +138,18 @@ export const NavBar = (props: NavBarProps) => {
             {nav.label}
           </UnstyledButton>
         ))}
+        {authenticated && (
+          <UnstyledButton
+            component="button"
+            onClick={logout}
+            px="lg"
+            py="md"
+            w="100%"
+            className={classes.mobileNavButton}
+          >
+            Logout
+          </UnstyledButton>
+        )}
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>

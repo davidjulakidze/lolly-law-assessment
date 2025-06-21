@@ -7,7 +7,7 @@ import { Customer } from '@/types';
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get('token')?.value;
-  const customersResponse = await fetch('http://localhost:3000/api/customers', {
+  const customersResponse = await fetch(`${process.env.url}/api/customers`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

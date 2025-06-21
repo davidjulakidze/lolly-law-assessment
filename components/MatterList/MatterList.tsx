@@ -16,6 +16,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { maxMatterItemsPerPage as itemsPerPage } from '@/constants';
 import { useDashboard } from '@/contexts/DashboardContext';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
 import { Matter } from '@/types';
@@ -24,7 +25,6 @@ export function MatterList() {
   const { state, dispatch } = useDashboard();
   const { handleEditMatter, handleDeleteMatter, setMatterPage } = useDashboardActions();
   const { selectedCustomer, loadingMatters, mattersError } = state;
-  const itemsPerPage = 6;
 
   const handleAddMatter = () => {
     dispatch({ type: 'OPEN_ADD_MATTER_MODAL' });

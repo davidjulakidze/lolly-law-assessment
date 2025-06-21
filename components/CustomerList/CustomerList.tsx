@@ -13,6 +13,7 @@ import {
   TextInput,
   Title,
 } from '@mantine/core';
+import { maxCustomerItemsPerPage as itemsPerPage } from '@/constants';
 import { useDashboard } from '@/contexts/DashboardContext';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
 import { Customer } from '@/types';
@@ -20,7 +21,6 @@ import { Customer } from '@/types';
 export function CustomerList() {
   const { state, dispatch } = useDashboard();
   const { handleCustomerSelect, setSearchTerm, setCustomerPage } = useDashboardActions();
-  const itemsPerPage = 10;
 
   const filteredCustomers = state.customers.filter(
     (customer) =>

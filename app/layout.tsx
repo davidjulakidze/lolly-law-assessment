@@ -12,7 +12,7 @@ export const metadata = {
   description: 'An assessment for LollyLaw',
 };
 
-export default function RootLayout({ children }: Readonly<{ children: any }>) {
+export default async function RootLayout({ children }: Readonly<{ children: any }>) {
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>

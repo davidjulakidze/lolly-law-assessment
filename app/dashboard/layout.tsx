@@ -11,7 +11,7 @@ export default async function DashboardLayout({
 
   // the path here is hardcoded since we are calling from server side
   // there are ways around this but for simplicity this works
-  const userInfo = await fetch('http://localhost:3000/api/auth/me', {
+  const userInfo = await fetch(`${process.env.url}/api/auth/me`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
