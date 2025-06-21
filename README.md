@@ -514,7 +514,7 @@ Creates a new matter for a customer.
 ```
 
 ### Update Matter
-Updates an existing matter. Only provide fields you want to update.
+Updates an existing matter.
 
 **PUT** `/api/customers/{customerId}/matters/{matterId}`
 
